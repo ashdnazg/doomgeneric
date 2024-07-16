@@ -16,8 +16,7 @@
 //     Main loop code.
 //
 
-#include <stdlib.h>
-#include <string.h>
+#include "c_lib.h"
 
 #include "doomfeatures.h"
 
@@ -174,7 +173,7 @@ static boolean BuildNewTic(void)
     }
 
     //printf ("mk:%i ",maketic);
-    memset(&cmd, 0, sizeof(ticcmd_t));
+    C_memset(&cmd, 0, sizeof(ticcmd_t));
     loop_interface->BuildTiccmd(&cmd, maketic);
 
 #ifdef FEATURE_MULTIPLAYER
@@ -260,7 +259,7 @@ static void D_Disconnected(void)
 
     // disconnected from server
 
-    printf("Disconnected from server.\n");
+    C_printf("Disconnected from server.\n");
 }
 
 //
@@ -806,7 +805,7 @@ void TryRunTics (void)
             if (gametic/ticdup > lowtic)
                 I_Error ("gametic>lowtic");
 
-            memcpy(local_playeringame, set->ingame, sizeof(local_playeringame));
+            C_memcpy(local_playeringame, set->ingame, sizeof(local_playeringame));
 
             loop_interface->RunTic(set->cmds, set->ingame);
             gametic++;

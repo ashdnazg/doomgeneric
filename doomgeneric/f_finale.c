@@ -16,9 +16,7 @@
 //        Game completion, final screen animation.
 //
 
-
-#include <stdio.h>
-#include <ctype.h>
+#include "c_lib.h"
 
 // Functions.
 #include "deh_main.h"
@@ -204,7 +202,7 @@ void F_Ticker (void)
         return;
 
     if (finalestage == F_STAGE_TEXT
-     && finalecount>strlen (finaletext)*TEXTSPEED + TEXTWAIT)
+     && finalecount>C_strlen (finaletext)*TEXTSPEED + TEXTWAIT)
     {
         finalecount = 0;
         finalestage = F_STAGE_ARTSCREEN;
@@ -244,12 +242,12 @@ void F_TextWrite (void)
     {
         for (x=0 ; x<SCREENWIDTH/64 ; x++)
         {
-            memcpy (dest, src+((y&63)<<6), 64);
+            C_memcpy (dest, src+((y&63)<<6), 64);
             dest += 64;
         }
         if (SCREENWIDTH&63)
         {
-            memcpy (dest, src+((y&63)<<6), SCREENWIDTH&63);
+            C_memcpy (dest, src+((y&63)<<6), SCREENWIDTH&63);
             dest += (SCREENWIDTH&63);
         }
     }
@@ -276,7 +274,7 @@ void F_TextWrite (void)
             continue;
         }
 
-        c = toupper(c) - HU_FONTSTART;
+        c = C_toupper(c) - HU_FONTSTART;
         if (c < 0 || c> HU_FONTSIZE)
         {
             cx += 4;
@@ -500,7 +498,7 @@ void F_CastPrint (char* text)
         c = *ch++;
         if (!c)
             break;
-        c = toupper(c) - HU_FONTSTART;
+        c = C_toupper(c) - HU_FONTSTART;
         if (c < 0 || c> HU_FONTSIZE)
         {
             width += 4;
@@ -519,7 +517,7 @@ void F_CastPrint (char* text)
         c = *ch++;
         if (!c)
             break;
-        c = toupper(c) - HU_FONTSTART;
+        c = C_toupper(c) - HU_FONTSTART;
         if (c < 0 || c> HU_FONTSIZE)
         {
             cx += 4;

@@ -19,7 +19,7 @@
 //
 
 
-
+#include "c_lib.h"
 
 #include "doomdef.h"
 #include "deh_main.h"
@@ -859,13 +859,13 @@ void R_FillBackScreen (void)
     {
         for (x=0 ; x<SCREENWIDTH/64 ; x++)
         {
-            memcpy (dest, src+((y&63)<<6), 64);
+            C_memcpy (dest, src+((y&63)<<6), 64);
             dest += 64;
         }
 
         if (SCREENWIDTH&63)
         {
-            memcpy (dest, src+((y&63)<<6), SCREENWIDTH&63);
+            C_memcpy (dest, src+((y&63)<<6), SCREENWIDTH&63);
             dest += (SCREENWIDTH&63);
         }
     }
@@ -928,7 +928,7 @@ R_VideoErase
 
     if (background_buffer != NULL)
     {
-        memcpy(I_VideoBuffer + ofs, background_buffer + ofs, count);
+        C_memcpy(I_VideoBuffer + ofs, background_buffer + ofs, count);
     }
 }
 

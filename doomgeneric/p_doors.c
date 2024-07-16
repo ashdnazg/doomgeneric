@@ -15,7 +15,7 @@
 // DESCRIPTION: Door animation code (opening/closing)
 //
 
-
+#include "c_lib.h"
 
 #include "z_zone.h"
 #include "doomdef.h"
@@ -437,8 +437,8 @@ EV_VerticalDoor
                 {
                     // This isn't a door OR a plat.  Now we're in trouble.
 
-                    fprintf(stderr, "EV_VerticalDoor: Tried to close "
-                                    "something that wasn't a door.\n");
+                    C_fprintf(C_stderr(), "EV_VerticalDoor: Tried to close "
+                                          "something that wasn't a door.\n");
 
                     // Try closing it anyway. At least it will work on 32-bit
                     // machines.

@@ -16,10 +16,7 @@
 //     to the IWAD type.
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
+#include "c_lib.h"
 
 #include "config.h"
 #include "deh_str.h"
@@ -80,7 +77,7 @@ static void AddIWADDir(char *dir)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-typedef struct 
+typedef struct
 {
     HKEY root;
     char *path;
@@ -89,7 +86,7 @@ typedef struct
 
 #define UNINSTALLER_STRING "\\uninstl.exe /S "
 
-// Keys installed by the various CD editions.  These are actually the 
+// Keys installed by the various CD editions.  These are actually the
 // commands to invoke the uninstaller and look like this:
 //
 // C:\Program Files\Path\uninstl.exe /S C:\Program Files\Path
@@ -154,7 +151,7 @@ static registry_value_t collectors_edition_value =
 
 // Subdirectories of the above install path, where IWADs are installed.
 
-static char *collectors_edition_subdirs[] = 
+static char *collectors_edition_subdirs[] =
 {
     "Doom2",
     "Final Doom",
@@ -214,12 +211,12 @@ static char *GetRegistryString(registry_value_t *reg_val)
     {
         // Allocate a buffer for the value and read the value
 
-        result = malloc(len);
+        result = C_malloc(len);
 
         if (RegQueryValueEx(key, reg_val->value, NULL, &valtype,
                             (unsigned char *) result, &len) != ERROR_SUCCESS)
         {
-            free(result);
+            C_free(result);
             result = NULL;
         }
     }
@@ -254,11 +251,11 @@ static void CheckUninstallStrings(void)
 
         if (unstr == NULL)
         {
-            free(val);
+            C_free(val);
         }
         else
         {
-            path = unstr + strlen(UNINSTALLER_STRING);
+            path = unstr + C_strlen(UNINSTALLER_STRING);
 
             AddIWADDir(path);
         }
@@ -288,7 +285,7 @@ static void CheckCollectorsEdition(void)
         AddIWADDir(subpath);
     }
 
-    free(install_path);
+    C_free(install_path);
 }
 
 
@@ -315,7 +312,7 @@ static void CheckSteamEdition(void)
         AddIWADDir(subpath);
     }
 
-    free(install_path);
+    C_free(install_path);
 }
 
 // The BFG edition ships with a full set of GUS patches. If we find them,
@@ -330,7 +327,7 @@ static void CheckSteamGUSPatches(void)
 
     // Already configured? Don't stomp on the user's choices.
     current_path = M_GetStrVariable("gus_patch_path");
-    if (current_path != NULL && strlen(current_path) > 0)
+    if (current_path != NULL && C_strlen(current_path) > 0)
     {
         return;
     }
@@ -342,8 +339,8 @@ static void CheckSteamGUSPatches(void)
         return;
     }
 
-    len = strlen(install_path) + strlen(STEAM_BFG_GUS_PATCHES) + 20;
-    patch_path = malloc(len);
+    len = C_strlen(install_path) + C_strlen(STEAM_BFG_GUS_PATCHES) + 20;
+    patch_path = C_malloc(len);
     M_snprintf(patch_path, len, "%s\\%s\\ACBASS.PAT",
                install_path, STEAM_BFG_GUS_PATCHES);
 
@@ -355,8 +352,8 @@ static void CheckSteamGUSPatches(void)
         M_SetVariable("gus_patch_path", patch_path);
     }
 
-    free(patch_path);
-    free(install_path);
+    C_free(patch_path);
+    C_free(install_path);
 }
 
 // Default install directories for DOS Doom
@@ -393,12 +390,12 @@ static boolean DirIsFile(char *path, char *filename)
     size_t path_len;
     size_t filename_len;
 
-    path_len = strlen(path);
-    filename_len = strlen(filename);
+    path_len = C_strlen(path);
+    filename_len = C_strlen(filename);
 
     return path_len >= filename_len + 1
         && path[path_len - filename_len - 1] == DIR_SEPARATOR
-        && !strcasecmp(&path[path_len - filename_len], filename);
+        && !C_strcasecmp(&path[path_len - filename_len], filename);
 }
 
 // Check if the specified directory contains the specified IWAD
@@ -407,36 +404,36 @@ static boolean DirIsFile(char *path, char *filename)
 
 static char *CheckDirectoryHasIWAD(char *dir, char *iwadname)
 {
-    char *filename; 
+    char *filename;
 
     // As a special case, the "directory" may refer directly to an
     // IWAD file if the path comes from DOOMWADDIR or DOOMWADPATH.
 
     if (DirIsFile(dir, iwadname) && M_FileExists(dir))
     {
-        return strdup(dir);
+        return C_strdup(dir);
     }
 
     // Construct the full path to the IWAD if it is located in
     // this directory, and check if it exists.
 
-    if (!strcmp(dir, "."))
+    if (!C_strcmp(dir, "."))
     {
-        filename = strdup(iwadname);
+        filename = C_strdup(iwadname);
     }
     else
     {
         filename = M_StringJoin(dir, DIR_SEPARATOR_S, iwadname, NULL);
     }
 
-    printf("Trying IWAD file:%s\n", filename);
+    C_printf("Trying IWAD file:%s\n", filename);
 
     if (M_FileExists(filename))
     {
         return filename;
     }
 
-    free(filename);
+    C_free(filename);
 
     return NULL;
 }
@@ -449,7 +446,7 @@ static char *SearchDirectoryForIWAD(char *dir, int mask, GameMission_t *mission)
     char *filename;
     size_t i;
 
-    for (i=0; i<arrlen(iwads); ++i) 
+    for (i=0; i<arrlen(iwads); ++i)
     {
         if (((1 << iwads[i].mission) & mask) == 0)
         {
@@ -478,7 +475,7 @@ static GameMission_t IdentifyIWADByName(char *name, int mask)
     GameMission_t mission;
     char *p;
 
-    p = strrchr(name, DIR_SEPARATOR);
+    p = C_strrchr(name, DIR_SEPARATOR);
 
     if (p != NULL)
     {
@@ -498,7 +495,7 @@ static GameMission_t IdentifyIWADByName(char *name, int mask)
 
         // Check if it ends in this IWAD name.
 
-        if (!strcasecmp(name, iwads[i].name))
+        if (!C_strcasecmp(name, iwads[i].name))
         {
             mission = iwads[i].mission;
             break;
@@ -527,7 +524,7 @@ static void AddDoomWadPath(void)
         return;
     }
 
-    doomwadpath = strdup(doomwadpath);
+    doomwadpath = C_strdup(doomwadpath);
 
     // Add the initial directory
 
@@ -545,7 +542,7 @@ static void AddDoomWadPath(void)
         {
             // Break at the separator and store the right hand side
             // as another iwad dir
-  
+
             *p = '\0';
             p += 1;
 
@@ -585,7 +582,7 @@ static void BuildIWADDirList(void)
     if (doomwaddir != NULL)
     {
         AddIWADDir(doomwaddir);
-    }        
+    }
 
     // Add dirs from DOOMWADPATH
 
@@ -623,13 +620,13 @@ static void BuildIWADDirList(void)
 
 //
 // Searches WAD search paths for an WAD with a specific filename.
-// 
+//
 
 char *D_FindWADByName(char *name)
 {
     char *path;
     int i;
-    
+
     // Absolute path?
 
     if (M_FileExists(name))
@@ -649,7 +646,7 @@ char *D_FindWADByName(char *name)
 
         if (DirIsFile(iwad_dirs[i], name) && M_FileExists(iwad_dirs[i]))
         {
-            return strdup(iwad_dirs[i]);
+            return C_strdup(iwad_dirs[i]);
         }
 
         // Construct a string for the full path
@@ -661,7 +658,7 @@ char *D_FindWADByName(char *name)
             return path;
         }
 
-        free(path);
+        C_free(path);
     }
 
     // File not found
@@ -728,19 +725,19 @@ char *D_FindIWAD(int mask, GameMission_t *mission)
         {
             I_Error("IWAD file '%s' not found!", iwadfile);
         }
-        
+
         *mission = IdentifyIWADByName(result, mask);
     }
     else
     {
         // Search through the list and look for an IWAD
 
-        printf("-iwad not specified, trying a few iwad names\n");
+        C_printf("-iwad not specified, trying a few iwad names\n");
 
         result = NULL;
 
         BuildIWADDirList();
-    
+
         for (i=0; result == NULL && i<num_iwad_dirs; ++i)
         {
             result = SearchDirectoryForIWAD(iwad_dirs[i], mask, mission);
@@ -759,7 +756,7 @@ const iwad_t **D_FindAllIWADs(int mask)
     char *filename;
     int i;
 
-    result = malloc(sizeof(iwad_t *) * (arrlen(iwads) + 1));
+    result = C_malloc(sizeof(iwad_t *) * (arrlen(iwads) + 1));
     result_len = 0;
 
     // Try to find all IWADs

@@ -19,8 +19,7 @@
 //
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "c_lib.h"
 
 #include "i_system.h"
 #include "z_zone.h"
@@ -191,7 +190,7 @@ void R_ClearPlanes (void)
     lastopening = openings;
 
     // texture calculation
-    memset (cachedheight, 0, sizeof(cachedheight));
+    C_memset (cachedheight, 0, sizeof(cachedheight));
 
     // left to right mapping
     angle = (viewangle-ANG90)>>ANGLETOFINESHIFT;
@@ -246,7 +245,7 @@ R_FindPlane
     check->minx = SCREENWIDTH;
     check->maxx = -1;
 
-    memset (check->top,0xff,sizeof(check->top));
+    C_memset (check->top,0xff,sizeof(check->top));
 
     return check;
 }
@@ -311,7 +310,7 @@ R_CheckPlane
     pl->minx = start;
     pl->maxx = stop;
 
-    memset (pl->top,0xff,sizeof(pl->top));
+    C_memset (pl->top,0xff,sizeof(pl->top));
 
     return pl;
 }
@@ -417,7 +416,7 @@ void R_DrawPlanes (void)
         lumpnum = firstflat + flattranslation[pl->picnum];
         ds_source = W_CacheLumpNum(lumpnum, PU_STATIC);
 
-        planeheight = abs(pl->height-viewz);
+        planeheight = C_abs(pl->height-viewz);
         light = (pl->lightlevel >> LIGHTSEGSHIFT)+extralight;
 
         if (light >= LIGHTLEVELS)

@@ -17,12 +17,9 @@
 //
 
 
+#include "c_lib.h"
 
-
-
-
-#include <stdio.h>
-#include <stdlib.h>
+#include <limits.h>
 
 #include "i_system.h"
 
@@ -396,7 +393,7 @@ R_StoreWallRange
 
     // calculate rw_distance for scale calculation
     rw_normalangle = curline->angle + ANG90;
-    offsetangle = abs(rw_normalangle-rw_angle1);
+    offsetangle = C_abs(rw_normalangle-rw_angle1);
 
     if (offsetangle > ANG90)
         offsetangle = ANG90;
@@ -715,7 +712,7 @@ R_StoreWallRange
     if ( ((ds_p->silhouette & SIL_TOP) || maskedtexture)
          && !ds_p->sprtopclip)
     {
-        memcpy (lastopening, ceilingclip+start, 2*(rw_stopx-start));
+        C_memcpy (lastopening, ceilingclip+start, 2*(rw_stopx-start));
         ds_p->sprtopclip = lastopening - start;
         lastopening += rw_stopx - start;
     }
@@ -723,7 +720,7 @@ R_StoreWallRange
     if ( ((ds_p->silhouette & SIL_BOTTOM) || maskedtexture)
          && !ds_p->sprbottomclip)
     {
-        memcpy (lastopening, floorclip+start, 2*(rw_stopx-start));
+        C_memcpy (lastopening, floorclip+start, 2*(rw_stopx-start));
         ds_p->sprbottomclip = lastopening - start;
         lastopening += rw_stopx - start;
     }

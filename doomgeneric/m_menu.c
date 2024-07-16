@@ -18,9 +18,7 @@
 //
 
 
-#include <stdlib.h>
-#include <ctype.h>
-
+#include "c_lib.h"
 
 #include "doomdef.h"
 #include "doomkeys.h"
@@ -502,7 +500,7 @@ menu_t  SaveDef =
 //
 void M_ReadSaveStrings(void)
 {
-    FILE   *handle;
+    file_t   *handle;
     int     i;
     char    name[256];
 
@@ -510,15 +508,15 @@ void M_ReadSaveStrings(void)
     {
         M_StringCopy(name, P_SaveGameFile(i), sizeof(name));
 
-        handle = fopen(name, "rb");
-        if (handle == NULL)
+        handle = C_fopen(name, "rb");
+        if (handle == 0)
         {
             M_StringCopy(savegamestrings[i], EMPTYSTRING, SAVESTRINGSIZE);
             LoadMenu[i].status = 0;
             continue;
         }
-        fread(&savegamestrings[i], 1, SAVESTRINGSIZE, handle);
-        fclose(handle);
+        C_fread(&savegamestrings[i], 1, SAVESTRINGSIZE, handle);
+        C_fclose(handle);
         LoadMenu[i].status = 1;
     }
 }
@@ -639,9 +637,9 @@ void M_SaveSelect(int choice)
 
     saveSlot = choice;
     M_StringCopy(saveOldString,savegamestrings[choice], SAVESTRINGSIZE);
-    if (!strcmp(savegamestrings[choice], EMPTYSTRING))
+    if (!C_strcmp(savegamestrings[choice], EMPTYSTRING))
         savegamestrings[choice][0] = 0;
-    saveCharIndex = strlen(savegamestrings[choice]);
+    saveCharIndex = C_strlen(savegamestrings[choice]);
 }
 
 //
@@ -967,8 +965,8 @@ void M_Episode(int choice)
     if ( (gamemode == registered)
          && (choice > 2))
     {
-      fprintf( stderr,
-               "M_Episode: 4th episode requires UltimateDOOM\n");
+      C_fprintf(C_stderr(),
+                "M_Episode: 4th episode requires UltimateDOOM\n");
       choice = 0;
     }
 
@@ -1318,9 +1316,9 @@ int M_StringWidth(char* string)
     int             w = 0;
     int             c;
 
-    for (i = 0;i < strlen(string);i++)
+    for (i = 0;i < C_strlen(string);i++)
     {
-        c = toupper(string[i]) - HU_FONTSTART;
+        c = C_toupper(string[i]) - HU_FONTSTART;
         if (c < 0 || c >= HU_FONTSIZE)
             w += 4;
         else
@@ -1342,7 +1340,7 @@ int M_StringHeight(char* string)
     int             height = SHORT(hu_font[0]->height);
 
     h = height;
-    for (i = 0;i < strlen(string);i++)
+    for (i = 0;i < C_strlen(string);i++)
         if (string[i] == '\n')
             h += height;
 
@@ -1382,7 +1380,7 @@ M_WriteText
             continue;
         }
 
-        c = toupper(c) - HU_FONTSTART;
+        c = C_toupper(c) - HU_FONTSTART;
         if (c < 0 || c>= HU_FONTSIZE)
         {
             cx += 4;
@@ -1600,7 +1598,7 @@ boolean M_Responder (event_t* ev)
                 ch = key;
             }
 
-            ch = toupper(ch);
+            ch = C_toupper(ch);
 
             if (ch != ' '
              && (ch - HU_FONTSTART < 0 || ch - HU_FONTSTART >= HU_FONTSIZE))
@@ -1969,7 +1967,7 @@ void M_Drawer (void)
         {
             int foundnewline = 0;
 
-            for (i = 0; i < strlen(messageString + start); i++)
+            for (i = 0; i < C_strlen(messageString + start); i++)
             {
                 if (messageString[start + i] == '\n')
                 {
@@ -1989,7 +1987,7 @@ void M_Drawer (void)
             if (!foundnewline)
             {
                 M_StringCopy(string, messageString + start, sizeof(string));
-                start += strlen(string);
+                start += C_strlen(string);
             }
 
             x = SCREENWIDTH/2 - M_StringWidth(string) / 2;

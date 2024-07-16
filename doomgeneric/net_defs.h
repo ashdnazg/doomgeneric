@@ -16,9 +16,7 @@
 //
 
 #ifndef NET_DEFS_H
-#define NET_DEFS_H 
-
-#include <stdio.h>
+#define NET_DEFS_H
 
 #include "doomtype.h"
 #include "d_ticcmd.h"
@@ -207,7 +205,7 @@ typedef struct
 
 // Complete set of ticcmds from all players
 
-typedef struct 
+typedef struct
 {
     signed int latency;
     unsigned int seq;

@@ -16,8 +16,6 @@
 //        Floor animation: raising stairs.
 //
 
-
-
 #include "z_zone.h"
 #include "doomdef.h"
 #include "p_local.h"

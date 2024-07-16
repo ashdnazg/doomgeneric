@@ -17,7 +17,7 @@
 //        generation of lookups, caching, retrieval by name.
 //
 
-#include <stdio.h>
+#include "c_lib.h"
 
 #include "deh_main.h"
 #include "i_swap.h"
@@ -209,7 +209,7 @@ R_DrawColumnInCache
             count = cacheheight - position;
 
         if (count > 0)
-            memcpy (cache + position, source, count);
+            C_memcpy (cache + position, source, count);
 
         patch = (column_t *)(  (byte *)patch + patch->length + 4);
     }
@@ -318,7 +318,7 @@ void R_GenerateLookup (int texnum)
     // Fill in the lump / offset, so columns
     //  with only a single patch are all done.
     patchcount = (byte *) Z_Malloc(texture->width, PU_STATIC, &patchcount);
-    memset (patchcount, 0, texture->width);
+    C_memset (patchcount, 0, texture->width);
     patch = texture->patches;
 
     for (i=0 , patch = texture->patches;
@@ -348,8 +348,8 @@ void R_GenerateLookup (int texnum)
     {
         if (!patchcount[x])
         {
-            printf ("R_GenerateLookup: column without a patch (%s)\n",
-                    texture->name);
+            C_printf ("R_GenerateLookup: column without a patch (%s)\n",
+                      texture->name);
             return;
         }
         // I_Error ("R_GenerateLookup: column without a patch");
@@ -410,7 +410,7 @@ static void GenerateTextureHashTable(void)
     textures_hashtable
             = Z_Malloc(sizeof(texture_t *) * numtextures, PU_STATIC, 0);
 
-    memset(textures_hashtable, 0, sizeof(texture_t *) * numtextures);
+    C_memset(textures_hashtable, 0, sizeof(texture_t *) * numtextures);
 
     // Add all textures to hash table
 
@@ -540,18 +540,18 @@ void R_InitTextures (void)
 
     if (I_ConsoleStdout())
     {
-        printf("[");
+        C_printf("[");
         for (i = 0; i < temp3 + 9; i++)
-            printf(" ");
-        printf("]");
+            C_printf(" ");
+        C_printf("]");
         for (i = 0; i < temp3 + 10; i++)
-            printf("\b");
+            C_printf("\b");
     }
 
     for (i=0 ; i<numtextures ; i++, directory++)
     {
         if (!(i&63))
-            printf (".");
+            C_printf (".");
 
         if (i == numtextures1)
         {
@@ -577,7 +577,7 @@ void R_InitTextures (void)
         texture->height = SHORT(mtexture->height);
         texture->patchcount = SHORT(mtexture->patchcount);
 
-        memcpy (texture->name, mtexture->name, sizeof(texture->name));
+        C_memcpy (texture->name, mtexture->name, sizeof(texture->name));
         mpatch = &mtexture->patches[0];
         patch = &texture->patches[0];
 
@@ -668,7 +668,7 @@ void R_InitSpriteLumps (void)
     for (i=0 ; i< numspritelumps ; i++)
     {
         if (!(i&63))
-            printf (".");
+            C_printf (".");
 
         patch = W_CacheLumpNum (firstspritelump+i, PU_CACHE);
         spritewidth[i] = SHORT(patch->width)<<FRACBITS;
@@ -703,11 +703,11 @@ void R_InitColormaps (void)
 void R_InitData (void)
 {
     R_InitTextures ();
-    printf (".");
+    C_printf (".");
     R_InitFlats ();
-    printf (".");
+    C_printf (".");
     R_InitSpriteLumps ();
-    printf (".");
+    C_printf (".");
     R_InitColormaps ();
 }
 
@@ -727,7 +727,7 @@ int R_FlatNumForName (char* name)
     if (i == -1)
     {
         namet[8] = 0;
-        memcpy (namet, name,8);
+        C_memcpy (namet, name,8);
         I_Error ("R_FlatNumForName: %s not found",namet);
     }
     return i - firstflat;
@@ -756,7 +756,7 @@ int        R_CheckTextureNumForName (char *name)
 
     while (texture != NULL)
     {
-        if (!strncasecmp (texture->name, name, 8) )
+        if (!C_strncasecmp (texture->name, name, 8) )
             return texture->index;
 
         texture = texture->next;
@@ -817,7 +817,7 @@ void R_PrecacheLevel (void)
 
     // Precache flats.
     flatpresent = Z_Malloc(numflats, PU_STATIC, NULL);
-    memset (flatpresent,0,numflats);
+    C_memset (flatpresent,0,numflats);
 
     for (i=0 ; i<numsectors ; i++)
     {
@@ -841,7 +841,7 @@ void R_PrecacheLevel (void)
 
     // Precache textures.
     texturepresent = Z_Malloc(numtextures, PU_STATIC, NULL);
-    memset (texturepresent,0, numtextures);
+    C_memset (texturepresent,0, numtextures);
 
     for (i=0 ; i<numsides ; i++)
     {
@@ -878,7 +878,7 @@ void R_PrecacheLevel (void)
 
     // Precache sprites.
     spritepresent = Z_Malloc(numsprites, PU_STATIC, NULL);
-    memset (spritepresent,0, numsprites);
+    C_memset (spritepresent,0, numsprites);
 
     for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
     {

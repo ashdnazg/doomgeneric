@@ -17,24 +17,7 @@
 //      Miscellaneous.
 //
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
-
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <io.h>
-#ifdef _MSC_VER
-#include <direct.h>
-#endif
-#else
-#include <sys/stat.h>
-#include <sys/types.h>
-#endif
+#include "c_lib.h"
 
 #include "doomtype.h"
 
@@ -54,24 +37,20 @@
 
 void M_MakeDirectory(char *path)
 {
-#ifdef _WIN32
-    mkdir(path);
-#else
-    mkdir(path, 0755);
-#endif
+    C_mkdir(path);
 }
 
 // Check if a file exists
 
 boolean M_FileExists(char *filename)
 {
-    FILE *fstream;
+    file_t *fstream;
 
-    fstream = fopen(filename, "r");
+    fstream = C_fopen(filename, "r");
 
     if (fstream != NULL)
     {
-        fclose(fstream);
+        C_fclose(fstream);
         return true;
     }
     else
@@ -79,7 +58,7 @@ boolean M_FileExists(char *filename)
         // If we can't open because the file is a directory, the
         // "file" exists at least!
 
-        return errno == EISDIR;
+        return C_errno() == C_e_is_dir();
     }
 }
 
@@ -87,20 +66,20 @@ boolean M_FileExists(char *filename)
 // Determine the length of an open file.
 //
 
-long M_FileLength(FILE *handle)
+long M_FileLength(void *handle)
 {
     long savedpos;
     long length;
 
     // save the current position in the file
-    savedpos = ftell(handle);
+    savedpos = C_ftell(handle);
 
     // jump to the end and find the length
-    fseek(handle, 0, SEEK_END);
-    length = ftell(handle);
+    C_fseek(handle, 0, C_seek_end());
+    length = C_ftell(handle);
 
     // go back to the old location
-    fseek(handle, savedpos, SEEK_SET);
+    C_fseek(handle, savedpos, C_seek_set());
 
     return length;
 }
@@ -111,16 +90,16 @@ long M_FileLength(FILE *handle)
 
 boolean M_WriteFile(char *name, void *source, int length)
 {
-    FILE *handle;
+    file_t *handle;
     int        count;
 
-    handle = fopen(name, "wb");
+    handle = C_fopen(name, "wb");
 
     if (handle == NULL)
         return false;
 
-    count = fwrite(source, 1, length, handle);
-    fclose(handle);
+    count = C_fwrite(source, 1, length, handle);
+    C_fclose(handle);
 
     if (count < length)
         return false;
@@ -135,11 +114,11 @@ boolean M_WriteFile(char *name, void *source, int length)
 
 int M_ReadFile(char *name, byte **buffer)
 {
-    FILE *handle;
+    file_t *handle;
     int        count, length;
     byte *buf;
 
-    handle = fopen(name, "rb");
+    handle = C_fopen(name, "rb");
     if (handle == NULL)
         I_Error ("Couldn't read file %s", name);
 
@@ -149,8 +128,8 @@ int M_ReadFile(char *name, byte **buffer)
     length = M_FileLength(handle);
 
     buf = Z_Malloc (length, PU_STATIC, NULL);
-    count = fread(buf, 1, length, handle);
-    fclose (handle);
+    count = C_fread(buf, 1, length, handle);
+    C_fclose(handle);
 
     if (count < length)
         I_Error ("Couldn't read file %s", name);
@@ -189,10 +168,10 @@ char *M_TempFile(char *s)
 
 boolean M_StrToInt(const char *str, int *result)
 {
-    return sscanf(str, " 0x%x", result) == 1
-        || sscanf(str, " 0X%x", result) == 1
-        || sscanf(str, " 0%o", result) == 1
-        || sscanf(str, " %d", result) == 1;
+    return C_sscanf(str, " 0x%x", result) == 1
+        || C_sscanf(str, " 0X%x", result) == 1
+        || C_sscanf(str, " 0%o", result) == 1
+        || C_sscanf(str, " %d", result) == 1;
 }
 
 void M_ExtractFileBase(char *path, char *dest)
@@ -201,7 +180,7 @@ void M_ExtractFileBase(char *path, char *dest)
     char *filename;
     int length;
 
-    src = path + strlen(path) - 1;
+    src = path + C_strlen(path) - 1;
 
     // back up until a \ or the start
     while (src != path && *(src - 1) != DIR_SEPARATOR)
@@ -217,18 +196,18 @@ void M_ExtractFileBase(char *path, char *dest)
     // filename limit, instead we simply truncate the name.
 
     length = 0;
-    memset(dest, 0, 8);
+    C_memset(dest, 0, 8);
 
     while (*src != '\0' && *src != '.')
     {
         if (length >= 8)
         {
-            printf("Warning: Truncated '%s' lump name to '%.8s'.\n",
-                   filename, dest);
+            C_printf("Warning: Truncated '%s' lump name to '%.8s'.\n",
+                     filename, dest);
             break;
         }
 
-        dest[length++] = toupper((int)*src++);
+        dest[length++] = C_toupper((int)*src++);
     }
 }
 
@@ -246,7 +225,7 @@ void M_ForceUppercase(char *text)
 
     for (p = text; *p != '\0'; ++p)
     {
-        *p = toupper(*p);
+        *p = C_toupper(*p);
     }
 }
 
@@ -263,8 +242,8 @@ char *M_StrCaseStr(char *haystack, char *needle)
     unsigned int len;
     unsigned int i;
 
-    haystack_len = strlen(haystack);
-    needle_len = strlen(needle);
+    haystack_len = C_strlen(haystack);
+    needle_len = C_strlen(needle);
 
     if (haystack_len < needle_len)
     {
@@ -275,7 +254,7 @@ char *M_StrCaseStr(char *haystack, char *needle)
 
     for (i = 0; i <= len; ++i)
     {
-        if (!strncasecmp(haystack + i, needle, needle_len))
+        if (!C_strncasecmp(haystack + i, needle, needle_len))
         {
             return haystack + i;
         }
@@ -293,12 +272,12 @@ char *M_StringDuplicate(const char *orig)
 {
     char *result;
 
-    result = strdup(orig);
+    result = C_strdup(orig);
 
     if (result == NULL)
     {
         I_Error("Failed to duplicate string (length %i)\n",
-                strlen(orig));
+                C_strlen(orig));
     }
 
     return result;
@@ -313,29 +292,29 @@ char *M_StringReplace(const char *haystack, const char *needle,
 {
     char *result, *dst;
     const char *p;
-    size_t needle_len = strlen(needle);
+    size_t needle_len = C_strlen(needle);
     size_t result_len, dst_len;
 
     // Iterate through occurrences of 'needle' and calculate the size of
     // the new string.
-    result_len = strlen(haystack) + 1;
+    result_len = C_strlen(haystack) + 1;
     p = haystack;
 
     for (;;)
     {
-        p = strstr(p, needle);
+        p = C_strstr(p, needle);
         if (p == NULL)
         {
             break;
         }
 
         p += needle_len;
-        result_len += strlen(replacement) - needle_len;
+        result_len += C_strlen(replacement) - needle_len;
     }
 
     // Construct new string.
 
-    result = malloc(result_len);
+    result = C_malloc(result_len);
     if (result == NULL)
     {
         I_Error("M_StringReplace: Failed to allocate new string");
@@ -347,12 +326,12 @@ char *M_StringReplace(const char *haystack, const char *needle,
 
     while (*p != '\0')
     {
-        if (!strncmp(p, needle, needle_len))
+        if (!C_strncmp(p, needle, needle_len))
         {
             M_StringCopy(dst, replacement, dst_len);
             p += needle_len;
-            dst += strlen(replacement);
-            dst_len -= strlen(replacement);
+            dst += C_strlen(replacement);
+            dst_len -= C_strlen(replacement);
         }
         else
         {
@@ -377,14 +356,14 @@ boolean M_StringCopy(char *dest, const char *src, size_t dest_size)
     if (dest_size >= 1)
     {
         dest[dest_size - 1] = '\0';
-        strncpy(dest, src, dest_size - 1);
+        C_strncpy(dest, src, dest_size - 1);
     }
     else
     {
         return false;
     }
 
-    len = strlen(dest);
+    len = C_strlen(dest);
     return src[len] == '\0';
 }
 
@@ -395,7 +374,7 @@ boolean M_StringConcat(char *dest, const char *src, size_t dest_size)
 {
     size_t offset;
 
-    offset = strlen(dest);
+    offset = C_strlen(dest);
     if (offset > dest_size)
     {
         offset = dest_size;
@@ -408,16 +387,16 @@ boolean M_StringConcat(char *dest, const char *src, size_t dest_size)
 
 boolean M_StringStartsWith(const char *s, const char *prefix)
 {
-    return strlen(s) > strlen(prefix)
-        && strncmp(s, prefix, strlen(prefix)) == 0;
+    return C_strlen(s) > C_strlen(prefix)
+        && C_strncmp(s, prefix, C_strlen(prefix)) == 0;
 }
 
 // Returns true if 's' ends with the specified suffix.
 
 boolean M_StringEndsWith(const char *s, const char *suffix)
 {
-    return strlen(s) >= strlen(suffix)
-        && strcmp(s + strlen(s) - strlen(suffix), suffix) == 0;
+    return C_strlen(s) >= C_strlen(suffix)
+        && C_strcmp(s + C_strlen(s) - C_strlen(suffix), suffix) == 0;
 }
 
 // Return a newly-malloced string with all the strings given as arguments
@@ -430,7 +409,7 @@ char *M_StringJoin(const char *s, ...)
     va_list args;
     size_t result_len;
 
-    result_len = strlen(s) + 1;
+    result_len = C_strlen(s) + 1;
 
     va_start(args, s);
     for (;;)
@@ -441,11 +420,11 @@ char *M_StringJoin(const char *s, ...)
             break;
         }
 
-        result_len += strlen(v);
+        result_len += C_strlen(v);
     }
     va_end(args);
 
-    result = malloc(result_len);
+    result = C_malloc(result_len);
 
     if (result == NULL)
     {
@@ -491,7 +470,7 @@ int M_vsnprintf(char *buf, size_t buf_len, const char *s, va_list args)
     // Windows (and other OSes?) has a vsnprintf() that doesn't always
     // append a trailing \0. So we must do it, and write into a buffer
     // that is one byte shorter; otherwise this function is unsafe.
-    result = vsnprintf(buf, buf_len, s, args);
+    result = C_vsnprintf(buf, buf_len, s, args);
 
     // If truncated, change the final char in the buffer to a \0.
     // A negative result indicates a truncated buffer on Windows.
@@ -519,15 +498,15 @@ int M_snprintf(char *buf, size_t buf_len, const char *s, ...)
 
 char *M_OEMToUTF8(const char *oem)
 {
-    unsigned int len = strlen(oem) + 1;
+    unsigned int len = C_strlen(oem) + 1;
     wchar_t *tmp;
     char *result;
 
-    tmp = malloc(len * sizeof(wchar_t));
+    tmp = C_malloc(len * sizeof(wchar_t));
     MultiByteToWideChar(CP_OEMCP, 0, oem, len, tmp, len);
-    result = malloc(len * 4);
+    result = C_malloc(len * 4);
     WideCharToMultiByte(CP_UTF8, 0, tmp, len, result, len * 4, NULL, NULL);
-    free(tmp);
+    C_free(tmp);
 
     return result;
 }

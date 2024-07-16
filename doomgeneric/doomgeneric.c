@@ -1,10 +1,10 @@
-#include <stdio.h>
+#include "c_lib.h"
 
 #include "m_argv.h"
 
 #include "doomgeneric.h"
 
-pixel_t* DG_ScreenBuffer = NULL;
+pixel_t* DG_ScreenBuffer = 0;
 
 void M_FindResponseFile(void);
 void D_DoomMain (void);
@@ -18,7 +18,7 @@ void doomgeneric_Create(int argc, char **argv)
 
         M_FindResponseFile();
 
-        DG_ScreenBuffer = malloc(DOOMGENERIC_RESX * DOOMGENERIC_RESY * 4);
+        DG_ScreenBuffer = C_malloc(DOOMGENERIC_RESX * DOOMGENERIC_RESY * 4);
 
         DG_Init();
 

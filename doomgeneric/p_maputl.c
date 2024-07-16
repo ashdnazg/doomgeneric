@@ -20,10 +20,7 @@
 //        and some PIT_* functions to use for iteration.
 //
 
-
-
-#include <stdlib.h>
-
+#include "c_lib.h"
 
 #include "m_bbox.h"
 
@@ -45,8 +42,8 @@ P_AproxDistance
 ( fixed_t        dx,
   fixed_t        dy )
 {
-    dx = abs(dx);
-    dy = abs(dy);
+    dx = C_abs(dx);
+    dy = C_abs(dy);
     if (dx < dy)
         return dx+dy-(dx>>1);
     return dx+dy-(dy>>1);
@@ -917,13 +914,13 @@ P_PathTraverse
     {
         mapxstep = 1;
         partial = FRACUNIT - ((x1>>MAPBTOFRAC)&(FRACUNIT-1));
-        ystep = FixedDiv (y2-y1,abs(x2-x1));
+        ystep = FixedDiv (y2-y1,C_abs(x2-x1));
     }
     else if (xt2 < xt1)
     {
         mapxstep = -1;
         partial = (x1>>MAPBTOFRAC)&(FRACUNIT-1);
-        ystep = FixedDiv (y2-y1,abs(x2-x1));
+        ystep = FixedDiv (y2-y1,C_abs(x2-x1));
     }
     else
     {
@@ -939,13 +936,13 @@ P_PathTraverse
     {
         mapystep = 1;
         partial = FRACUNIT - ((y1>>MAPBTOFRAC)&(FRACUNIT-1));
-        xstep = FixedDiv (x2-x1,abs(y2-y1));
+        xstep = FixedDiv (x2-x1,C_abs(y2-y1));
     }
     else if (yt2 < yt1)
     {
         mapystep = -1;
         partial = (y1>>MAPBTOFRAC)&(FRACUNIT-1);
-        xstep = FixedDiv (x2-x1,abs(y2-y1));
+        xstep = FixedDiv (x2-x1,C_abs(y2-y1));
     }
     else
     {

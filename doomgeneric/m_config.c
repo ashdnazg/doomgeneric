@@ -17,12 +17,7 @@
 //    Configuration file interface.
 //
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
+#include "c_lib.h"
 
 #include "config.h"
 
@@ -1566,7 +1561,7 @@ static default_t *SearchCollection(default_collection_t *collection, char *name)
 
     for (i=0; i<collection->numdefaults; ++i)
     {
-        if (!strcmp(name, collection->defaults[i].name))
+        if (!C_strcmp(name, collection->defaults[i].name))
         {
             return &collection->defaults[i];
         }
@@ -1718,9 +1713,9 @@ static int ParseIntParameter(char *strparm)
     int parm;
 
     if (strparm[0] == '0' && strparm[1] == 'x')
-        sscanf(strparm+2, "%x", &parm);
+        C_sscanf(strparm+2, "%x", &parm);
     else
-        sscanf(strparm, "%i", &parm);
+        C_sscanf(strparm, "%i", &parm);
 
     return parm;
 }
@@ -1734,7 +1729,7 @@ static void SetVariable(default_t *def, char *value)
     switch (def->type)
     {
         case DEFAULT_STRING:
-            * (char **) def->location = strdup(value);
+            * (char **) def->location = C_strdup(value);
             break;
 
         case DEFAULT_INT:
@@ -1763,7 +1758,7 @@ static void SetVariable(default_t *def, char *value)
             break;
 
         case DEFAULT_FLOAT:
-            * (float *) def->location = (float) atof(value);
+            * (float *) def->location = (float) C_atof(value);
             break;
     }
 }
@@ -1811,17 +1806,17 @@ static void LoadDefaultCollection(default_collection_t *collection)
         // Strip off trailing non-printable characters (\r characters
         // from DOS text files)
 
-        while (strlen(strparm) > 0 && !isprint(strparm[strlen(strparm)-1]))
+        while (C_strlen(strparm) > 0 && !isprint(strparm[strlen(strparm)-1]))
         {
-            strparm[strlen(strparm)-1] = '\0';
+            strparm[C_strlen(strparm)-1] = '\0';
         }
 
         // Surrounded by quotes? If so, remove them.
-        if (strlen(strparm) >= 2
+        if (C_strlen(strparm) >= 2
          && strparm[0] == '"' && strparm[strlen(strparm) - 1] == '"')
         {
-            strparm[strlen(strparm) - 1] = '\0';
-            memmove(strparm, strparm + 1, sizeof(strparm) - 1);
+            strparm[C_strlen(strparm) - 1] = '\0';
+            C_memmove(strparm, strparm + 1, sizeof(strparm) - 1);
         }
 
         SetVariable(def, strparm);
@@ -1897,7 +1892,7 @@ void M_LoadDefaults (void)
     if (i)
     {
         doom_defaults.filename = myargv[i+1];
-        printf ("        default file: %s\n",doom_defaults.filename);
+        C_printf ("        default file: %s\n",doom_defaults.filename);
     }
     else
     {
@@ -1905,7 +1900,7 @@ void M_LoadDefaults (void)
             = M_StringJoin(configdir, default_main_config, NULL);
     }
 
-    printf("saving config in %s\n", doom_defaults.filename);
+    C_printf("saving config in %s\n", doom_defaults.filename);
 
     //!
     // @arg <file>
@@ -1919,7 +1914,7 @@ void M_LoadDefaults (void)
     if (i)
     {
         extra_defaults.filename = myargv[i+1];
-        printf("        extra configuration file: %s\n",
+        C_printf("        extra configuration file: %s\n",
                extra_defaults.filename);
     }
     else
@@ -2042,7 +2037,7 @@ float M_GetFloatVariable(char *name)
 
 static char *GetDefaultConfigDir(void)
 {
-    char *result = (char *)malloc(2);
+    char *result = (char *)C_malloc(2);
     result[0] = '.';
     result[1] = '\0';
 
@@ -2069,9 +2064,9 @@ void M_SetConfigDir(char *dir)
         configdir = GetDefaultConfigDir();
     }
 
-    if (strcmp(configdir, "") != 0)
+    if (C_strcmp(configdir, "") != 0)
     {
-        printf("Using %s for configuration and saves\n", configdir);
+        C_printf("Using %s for configuration and saves\n", configdir);
     }
 
     // Make the directory if it doesn't already exist:
@@ -2094,9 +2089,9 @@ char *M_GetSaveGameDir(char *iwadname)
     // If not "doing" a configuration directory (Windows), don't "do"
     // a savegame directory, either.
 
-    if (!strcmp(configdir, ""))
+    if (!C_strcmp(configdir, ""))
     {
-            savegamedir = strdup("");
+            savegamedir = C_strdup("");
     }
     else
     {
@@ -2113,13 +2108,13 @@ char *M_GetSaveGameDir(char *iwadname)
 
         M_MakeDirectory(savegamedir);
 
-        free(topdir);
+        C_free(topdir);
 #else
         savegamedir = M_StringJoin(configdir, DIR_SEPARATOR_S, ".savegame/", NULL);
 
         M_MakeDirectory(savegamedir);
 
-        printf ("Using %s for savegames\n", savegamedir);
+        C_printf ("Using %s for savegames\n", savegamedir);
 #endif
     }
 

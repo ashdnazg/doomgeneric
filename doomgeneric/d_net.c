@@ -17,8 +17,6 @@
 //        all OS independend parts.
 //
 
-#include <stdlib.h>
-
 #include "doomfeatures.h"
 
 #include "d_main.h"
@@ -123,7 +121,7 @@ static void LoadGameSettings(net_gamesettings_t *settings)
 
     if (lowres_turn)
     {
-        printf("NOTE: Turning resolution is reduced; this is probably "
+        C_printf("NOTE: Turning resolution is reduced; this is probably "
                "because there is a client recording a Vanilla demo.\n");
     }
 
@@ -273,8 +271,8 @@ void D_CheckNetGame (void)
         {
             DEH_printf("Levels will end after %d minute", timelimit);
             if (timelimit > 1)
-                printf("s");
-            printf(".\n");
+                C_printf("s");
+            C_printf(".\n");
         }
     }
 }

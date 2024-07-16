@@ -16,7 +16,7 @@
 //        Mission begin melt/wipe screen special effect.
 //
 
-#include <string.h>
+#include "c_lib.h"
 
 #include "z_zone.h"
 #include "i_video.h"
@@ -55,7 +55,7 @@ wipe_shittyColMajorXform
         for(x=0;x<width;x++)
             dest[x*height+y] = array[y*width+x];
 
-    memcpy(array, dest, width*height*2);
+    C_memcpy(array, dest, width*height*2);
 
     Z_Free(dest);
 
@@ -67,7 +67,7 @@ wipe_initColorXForm
   int        height,
   int        ticks )
 {
-    memcpy(wipe_scr, wipe_scr_start, width*height);
+    C_memcpy(wipe_scr, wipe_scr_start, width*height);
     return 0;
 }
 
@@ -138,7 +138,7 @@ wipe_initMelt
     int i, r;
 
     // copy start screen to main screen
-    memcpy(wipe_scr, wipe_scr_start, width*height);
+    C_memcpy(wipe_scr, wipe_scr_start, width*height);
 
     // makes this wipe faster (in theory)
     // to have stuff in column-major format

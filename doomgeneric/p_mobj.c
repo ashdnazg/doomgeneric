@@ -16,7 +16,7 @@
 //        Moving object handling. Spawn functions.
 //
 
-#include <stdio.h>
+#include "c_lib.h"
 
 #include "i_system.h"
 #include "z_zone.h"
@@ -514,7 +514,7 @@ P_SpawnMobj
     mobjinfo_t*        info;
 
     mobj = Z_Malloc (sizeof(*mobj), PU_LEVEL, NULL);
-    memset (mobj, 0, sizeof (*mobj));
+    C_memset (mobj, 0, sizeof (*mobj));
     info = &mobjinfo[type];
 
     mobj->type = type;
@@ -750,7 +750,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
     {
         if (deathmatch_p < &deathmatchstarts[10])
         {
-            memcpy (deathmatch_p, mthing, sizeof(*mthing));
+            C_memcpy (deathmatch_p, mthing, sizeof(*mthing));
             deathmatch_p++;
         }
         return;

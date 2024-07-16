@@ -19,9 +19,7 @@
 
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "c_lib.h"
 
 #include "d_player.h"
 #include "d_mode.h"
@@ -284,7 +282,7 @@ static void PrintLevelName(FILE *stream, int episode, int level)
             break;
         default:
         case none:
-            fprintf(stream, "E%iM%i / MAP%02i\n", 
+            fprintf(stream, "E%iM%i / MAP%02i\n",
                     episode + 1, level + 1, level + 1);
             break;
     }
@@ -334,7 +332,7 @@ void StatCopy(wbstartstruct_t *stats)
 {
     if (M_ParmExists("-statdump") && num_captured_stats < MAX_CAPTURES)
     {
-        memcpy(&captured_stats[num_captured_stats], stats,
+        C_memcpy(&captured_stats[num_captured_stats], stats,
                sizeof(wbstartstruct_t));
         ++num_captured_stats;
     }

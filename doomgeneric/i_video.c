@@ -25,6 +25,10 @@
 static const char
 rcsid[] = "$Id: i_x.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 
+#include "c_lib.h"
+
+#include <limits.h>
+
 #include "config.h"
 #include "v_video.h"
 #include "m_argv.h"
@@ -39,13 +43,6 @@ rcsid[] = "$Id: i_x.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 #include "doomgeneric.h"
 
 #include <stdbool.h>
-#include <stdlib.h>
-
-#include <fcntl.h>
-
-#include <stdarg.h>
-
-#include <sys/types.h>
 
 //#define CMAP256
 
@@ -183,7 +180,7 @@ void I_InitGraphics (void)
 {
     int i;
 
-        memset(&s_Fb, 0, sizeof(struct FB_ScreenInfo));
+        C_memset(&s_Fb, 0, sizeof(struct FB_ScreenInfo));
         s_Fb.xres = DOOMGENERIC_RESX;
         s_Fb.yres = DOOMGENERIC_RESY;
         s_Fb.xres_virtual = s_Fb.xres;
@@ -209,25 +206,25 @@ void I_InitGraphics (void)
 
 #endif  // CMAP256
 
-    printf("I_InitGraphics: framebuffer: x_res: %d, y_res: %d, x_virtual: %d, y_virtual: %d, bpp: %d\n",
+    C_printf("I_InitGraphics: framebuffer: x_res: %d, y_res: %d, x_virtual: %d, y_virtual: %d, bpp: %d\n",
             s_Fb.xres, s_Fb.yres, s_Fb.xres_virtual, s_Fb.yres_virtual, s_Fb.bits_per_pixel);
 
-    printf("I_InitGraphics: framebuffer: RGBA: %d%d%d%d, red_off: %d, green_off: %d, blue_off: %d, transp_off: %d\n",
+    C_printf("I_InitGraphics: framebuffer: RGBA: %d%d%d%d, red_off: %d, green_off: %d, blue_off: %d, transp_off: %d\n",
             s_Fb.red.length, s_Fb.green.length, s_Fb.blue.length, s_Fb.transp.length, s_Fb.red.offset, s_Fb.green.offset, s_Fb.blue.offset, s_Fb.transp.offset);
 
-    printf("I_InitGraphics: DOOM screen size: w x h: %d x %d\n", SCREENWIDTH, SCREENHEIGHT);
+    C_printf("I_InitGraphics: DOOM screen size: w x h: %d x %d\n", SCREENWIDTH, SCREENHEIGHT);
 
 
     i = M_CheckParmWithArgs("-scaling", 1);
     if (i > 0) {
-        i = atoi(myargv[i + 1]);
+        i = C_atoi(myargv[i + 1]);
         fb_scaling = i;
-        printf("I_InitGraphics: Scaling factor: %d\n", fb_scaling);
+        C_printf("I_InitGraphics: Scaling factor: %d\n", fb_scaling);
     } else {
         fb_scaling = s_Fb.xres / SCREENWIDTH;
         if (s_Fb.yres / SCREENHEIGHT < fb_scaling)
             fb_scaling = s_Fb.yres / SCREENHEIGHT;
-        printf("I_InitGraphics: Auto-scaling factor: %d\n", fb_scaling);
+        C_printf("I_InitGraphics: Auto-scaling factor: %d\n", fb_scaling);
     }
 
 
@@ -291,7 +288,7 @@ void I_FinishUpdate (void)
             line_out += x_offset;
 #ifdef CMAP256
             if (fb_scaling == 1) {
-                memcpy(line_out, line_in, SCREENWIDTH); /* fb_width is bigger than Doom SCREENWIDTH... */
+                C_memcpy(line_out, line_in, SCREENWIDTH); /* fb_width is bigger than Doom SCREENWIDTH... */
             } else {
                 int j;
 
@@ -319,7 +316,7 @@ void I_FinishUpdate (void)
 //
 void I_ReadScreen (byte* scr)
 {
-    memcpy (scr, I_VideoBuffer, SCREENWIDTH * SCREENHEIGHT);
+    C_memcpy (scr, I_VideoBuffer, SCREENWIDTH * SCREENHEIGHT);
 }
 
 //
@@ -372,7 +369,7 @@ int I_GetPaletteIndex (int r, int g, int b)
     int i;
     col_t color;
 
-    printf("I_GetPaletteIndex\n");
+    C_printf("I_GetPaletteIndex\n");
 
     best = 0;
     best_diff = INT_MAX;

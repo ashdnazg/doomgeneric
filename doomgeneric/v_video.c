@@ -19,9 +19,7 @@
 //        Functions to blit a block to the screen.
 //
 
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
+#include "c_lib.h"
 
 #include "i_system.h"
 
@@ -110,7 +108,7 @@ void V_CopyRect(int srcx, int srcy, byte *source,
 
     for ( ; height>0 ; height--)
     {
-        memcpy(dest, src, width);
+        C_memcpy(dest, src, width);
         src += SCREENWIDTH;
         dest += SCREENWIDTH;
     }
@@ -520,7 +518,7 @@ void V_DrawBlock(int x, int y, int width, int height, byte *src)
 
     while (height--)
     {
-        memcpy (dest, src, width);
+        C_memcpy (dest, src, width);
         src += width;
         dest += SCREENWIDTH;
     }
@@ -588,7 +586,7 @@ void V_DrawBox(int x, int y, int w, int h, int c)
 
 void V_DrawRawScreen(byte *raw)
 {
-    memcpy(dest_screen, raw, SCREENWIDTH * SCREENHEIGHT);
+    C_memcpy(dest_screen, raw, SCREENWIDTH * SCREENHEIGHT);
 }
 
 //
@@ -671,11 +669,11 @@ void WritePCXfile(char *filename, byte *data,
     pcx->ymax = SHORT(height-1);
     pcx->hres = SHORT(width);
     pcx->vres = SHORT(height);
-    memset (pcx->palette,0,sizeof(pcx->palette));
+    C_memset (pcx->palette,0,sizeof(pcx->palette));
     pcx->color_planes = 1;                // chunky image
     pcx->bytes_per_line = SHORT(width);
     pcx->palette_type = SHORT(2);        // not a grey scale
-    memset (pcx->filler,0,sizeof(pcx->filler));
+    C_memset (pcx->filler,0,sizeof(pcx->filler));
 
     // pack the image
     pack = &pcx->data;
@@ -865,7 +863,7 @@ void V_DrawMouseSpeedBox(int speed)
     // If the mouse is turned off or acceleration is turned off, don't
     // draw the box at all.
 
-    if (!usemouse || fabs(mouse_acceleration - 1) < 0.01)
+    if (!usemouse || C_fabs(mouse_acceleration - 1) < 0.01)
     {
         return;
     }

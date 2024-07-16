@@ -86,6 +86,8 @@ void P_DropWeapon (player_t* player);
 void        P_PlayerThink (player_t* player);
 
 
+#include <limits.h>
+
 //
 // P_MOBJ
 //

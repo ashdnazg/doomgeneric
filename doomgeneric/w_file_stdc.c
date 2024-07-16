@@ -16,7 +16,7 @@
 //        WAD I/O functions.
 //
 
-#include <stdio.h>
+#include "c_lib.h"
 
 #include "m_misc.h"
 #include "w_file.h"
@@ -25,7 +25,7 @@
 typedef struct
 {
     wad_file_t wad;
-    FILE *fstream;
+    file_t *fstream;
 } stdc_wad_file_t;
 
 extern wad_file_class_t stdc_wad_file;
@@ -33,9 +33,9 @@ extern wad_file_class_t stdc_wad_file;
 static wad_file_t *W_StdC_OpenFile(char *path)
 {
     stdc_wad_file_t *result;
-    FILE *fstream;
+    file_t *fstream;
 
-    fstream = fopen(path, "rb");
+    fstream = C_fopen(path, "rb");
 
     if (fstream == NULL)
     {
@@ -59,7 +59,7 @@ static void W_StdC_CloseFile(wad_file_t *wad)
 
     stdc_wad = (stdc_wad_file_t *) wad;
 
-    fclose(stdc_wad->fstream);
+    C_fclose(stdc_wad->fstream);
     Z_Free(stdc_wad);
 }
 
@@ -76,11 +76,11 @@ size_t W_StdC_Read(wad_file_t *wad, unsigned int offset,
 
     // Jump to the specified position in the file.
 
-    fseek(stdc_wad->fstream, offset, SEEK_SET);
+    C_fseek(stdc_wad->fstream, offset, C_seek_set());
 
     // Read into the buffer.
 
-    result = fread(buffer, 1, buffer_len, stdc_wad->fstream);
+    result = C_fread(buffer, 1, buffer_len, stdc_wad->fstream);
 
     return result;
 }

@@ -17,12 +17,7 @@
 //
 
 
-
-
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "c_lib.h"
 
 #include "doomtype.h"
 
@@ -77,7 +72,7 @@ unsigned int W_LumpNameHash(const char *s)
 
     for (i=0; i < 8 && s[i] != '\0'; ++i)
     {
-        result = ((result << 5) ^ result ) ^ toupper((int)s[i]);
+        result = ((result << 5) ^ result ) ^ C_toupper((int)s[i]);
     }
 
     return result;
@@ -89,7 +84,7 @@ static void ExtendLumpInfo(int newnumlumps)
     lumpinfo_t *newlumpinfo;
     unsigned int i;
 
-    newlumpinfo = calloc(newnumlumps, sizeof(lumpinfo_t));
+    newlumpinfo = C_calloc(newnumlumps, sizeof(lumpinfo_t));
 
     if (newlumpinfo == NULL)
     {
@@ -101,7 +96,7 @@ static void ExtendLumpInfo(int newnumlumps)
     // pointers to the new location.
     for (i = 0; i < numlumps && i < newnumlumps; ++i)
     {
-        memcpy(&newlumpinfo[i], &lumpinfo[i], sizeof(lumpinfo_t));
+        C_memcpy(&newlumpinfo[i], &lumpinfo[i], sizeof(lumpinfo_t));
 
         if (newlumpinfo[i].cache != NULL)
         {
@@ -118,7 +113,7 @@ static void ExtendLumpInfo(int newnumlumps)
     }
 
     // All done.
-    free(lumpinfo);
+    C_free(lumpinfo);
     lumpinfo = newlumpinfo;
     numlumps = newnumlumps;
 }
@@ -154,13 +149,13 @@ wad_file_t *W_AddFile (char *filename)
 
     if (wad_file == NULL)
     {
-                printf (" couldn't open %s\n", filename);
+                C_printf (" couldn't open %s\n", filename);
                 return NULL;
     }
 
     newnumlumps = numlumps;
 
-    if (strcasecmp(filename+strlen(filename)-3 , "wad" ) )
+    if (C_strcasecmp(filename+C_strlen(filename)-3 , "wad" ) )
     {
             // single lump file
 
@@ -184,10 +179,10 @@ wad_file_t *W_AddFile (char *filename)
             // WAD file
         W_Read(wad_file, 0, &header, sizeof(header));
 
-                if (strncmp(header.identification,"IWAD",4))
+                if (C_strncmp(header.identification,"IWAD",4))
                 {
                         // Homebrew levels?
-                        if (strncmp(header.identification,"PWAD",4))
+                        if (C_strncmp(header.identification,"PWAD",4))
                         {
                         I_Error ("Wad file %s doesn't have IWAD "
                                  "or PWAD id\n", filename);
@@ -219,7 +214,7 @@ wad_file_t *W_AddFile (char *filename)
                 lump_p->position = LONG(filerover->filepos);
                 lump_p->size = LONG(filerover->size);
                         lump_p->cache = NULL;
-                strncpy(lump_p->name, filerover->name, 8);
+                C_strncpy(lump_p->name, filerover->name, 8);
 
                         ++lump_p;
                         ++filerover;
@@ -270,7 +265,7 @@ int W_CheckNumForName (char* name)
 
         for (lump_p = lumphash[hash]; lump_p != NULL; lump_p = lump_p->next)
         {
-            if (!strncasecmp(lump_p->name, name, 8))
+            if (!C_strncasecmp(lump_p->name, name, 8))
             {
                 return lump_p - lumpinfo;
             }
@@ -284,7 +279,7 @@ int W_CheckNumForName (char* name)
 
         for (i=numlumps-1; i >= 0; --i)
         {
-            if (!strncasecmp(lumpinfo[i].name, name, 8))
+            if (!C_strncasecmp(lumpinfo[i].name, name, 8))
             {
                 return i;
             }
@@ -551,7 +546,7 @@ void W_GenerateHashTable(void)
     if (numlumps > 0)
     {
         lumphash = Z_Malloc(sizeof(lumpinfo_t *) * numlumps, PU_STATIC, NULL);
-        memset(lumphash, 0, sizeof(lumpinfo_t *) * numlumps);
+        C_memset(lumphash, 0, sizeof(lumpinfo_t *) * numlumps);
 
         for (i=0; i<numlumps; ++i)
         {

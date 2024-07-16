@@ -17,10 +17,9 @@
 //
 
 
+#include "c_lib.h"
 
-
-#include <stdio.h>
-#include <stdlib.h>
+#include <limits.h>
 
 
 #include "deh_main.h"
@@ -200,7 +199,7 @@ void R_InitSpriteDefs (char** namelist)
     for (i=0 ; i<numsprites ; i++)
     {
         spritename = DEH_String(namelist[i]);
-        memset (sprtemp,-1, sizeof(sprtemp));
+        C_memset (sprtemp,-1, sizeof(sprtemp));
 
         maxframe = -1;
 
@@ -208,7 +207,7 @@ void R_InitSpriteDefs (char** namelist)
         //  filling in the frames for whatever is found
         for (l=start+1 ; l<end ; l++)
         {
-            if (!strncasecmp(lumpinfo[l].name, spritename, 4))
+            if (!C_strncasecmp(lumpinfo[l].name, spritename, 4))
             {
                 frame = lumpinfo[l].name[4] - 'A';
                 rotation = lumpinfo[l].name[5] - '0';
@@ -267,7 +266,7 @@ void R_InitSpriteDefs (char** namelist)
         sprites[i].numframes = maxframe;
         sprites[i].spriteframes =
             Z_Malloc (maxframe * sizeof(spriteframe_t), PU_STATIC, NULL);
-        memcpy (sprites[i].spriteframes, sprtemp, maxframe*sizeof(spriteframe_t));
+        C_memcpy (sprites[i].spriteframes, sprtemp, maxframe*sizeof(spriteframe_t));
     }
 
 }
@@ -413,7 +412,7 @@ R_DrawVisSprite
             ( (vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT-8) );
     }
 
-    dc_iscale = abs(vis->xiscale)>>detailshift;
+    dc_iscale = C_abs(vis->xiscale)>>detailshift;
     dc_texturemid = vis->texturemid;
     frac = vis->startfrac;
     spryscale = vis->scale;
@@ -491,7 +490,7 @@ void R_ProjectSprite (mobj_t* thing)
     tx = -(gyt+gxt);
 
     // too far off the side?
-    if (abs(tx)>(tz<<2))
+    if (C_abs(tx)>(tz<<2))
         return;
 
     // decide which patch to use for sprite relative to player

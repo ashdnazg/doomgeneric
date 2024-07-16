@@ -18,7 +18,9 @@
 
 
 
-#include "stdlib.h"
+#include "c_lib.h"
+
+#include <limits.h>
 
 #include "doomtype.h"
 #include "i_system.h"
@@ -46,7 +48,7 @@ FixedMul
 
 fixed_t FixedDiv(fixed_t a, fixed_t b)
 {
-    if ((abs(a) >> 14) >= abs(b))
+    if ((C_abs(a) >> 14) >= C_abs(b))
     {
         return (a^b) < 0 ? INT_MIN : INT_MAX;
     }

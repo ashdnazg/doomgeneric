@@ -15,19 +15,13 @@
 // DESCRIPTION:
 //
 
-
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include "c_lib.h"
 
 #include <stdarg.h>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#else
-#include <unistd.h>
 #endif
 
 #ifdef ORIGCODE
@@ -74,7 +68,7 @@ void I_AtExit(atexit_func_t func, boolean run_on_error)
 {
     atexit_listentry_t *entry;
 
-    entry = malloc(sizeof(*entry));
+    entry = C_malloc(sizeof(*entry));
 
     entry->func = func;
     entry->run_on_error = run_on_error;
@@ -116,7 +110,7 @@ static byte *AutoAllocMemory(int *size, int default_ram, int min_ram)
 
         *size = default_ram * 1024 * 1024;
 
-        zonemem = malloc(*size);
+        zonemem = C_malloc(*size);
 
         // Failed to allocate?  Reduce zone size until we reach a size
         // that is acceptable.
@@ -146,7 +140,7 @@ byte *I_ZoneBase (int *size)
 
     if (p > 0)
     {
-        default_ram = atoi(myargv[p+1]);
+        default_ram = C_atoi(myargv[p+1]);
         min_ram = default_ram;
     }
     else
@@ -157,8 +151,8 @@ byte *I_ZoneBase (int *size)
 
     zonemem = AutoAllocMemory(size, default_ram, min_ram);
 
-    printf("zone memory: %p, %x allocated for zone\n",
-           zonemem, *size);
+    C_printf("zone memory: %p, %x allocated for zone\n",
+             zonemem, *size);
 
     return zonemem;
 }
@@ -166,12 +160,12 @@ byte *I_ZoneBase (int *size)
 void I_PrintBanner(char *msg)
 {
     int i;
-    int spaces = 35 - (strlen(msg) / 2);
+    int spaces = 35 - (C_strlen(msg) / 2);
 
     for (i=0; i<spaces; ++i)
-        putchar(' ');
+        C_putchar(' ');
 
-    puts(msg);
+    C_puts(msg);
 }
 
 void I_PrintDivider(void)
@@ -180,10 +174,10 @@ void I_PrintDivider(void)
 
     for (i=0; i<75; ++i)
     {
-        putchar('=');
+        C_putchar('=');
     }
 
-    putchar('\n');
+    C_putchar('\n');
 }
 
 void I_PrintStartupBanner(char *gamedescription)
@@ -192,7 +186,7 @@ void I_PrintStartupBanner(char *gamedescription)
     I_PrintBanner(gamedescription);
     I_PrintDivider();
 
-    printf(
+    C_printf(
     " " PACKAGE_NAME " is free software, covered by the GNU General Public\n"
     " License.  There is NO warranty; not even for MERCHANTABILITY or FITNESS\n"
     " FOR A PARTICULAR PURPOSE. You are welcome to change and distribute\n"
@@ -271,7 +265,7 @@ void I_Quit (void)
 
 static int ZenityAvailable(void)
 {
-    return system(ZENITY_BINARY " --help >/dev/null 2>&1") == 0;
+    return C_system(ZENITY_BINARY " --help >/dev/null 2>&1") == 0;
 }
 
 // Escape special characters in the given string so that they can be
@@ -283,7 +277,7 @@ static char *EscapeShellString(char *string)
     char *r, *s;
 
     // In the worst case, every character might be escaped.
-    result = malloc(strlen(string) * 2 + 3);
+    result = C_malloc(C_strlen(string) * 2 + 3);
     r = result;
 
     // Enclosing quotes.
@@ -300,7 +294,7 @@ static char *EscapeShellString(char *string)
         //
         // Therefore, escape these characters by prefixing with a backslash.
 
-        if (strchr("$`\\!", *s) != NULL)
+        if (C_strchr("$`\\!", *s) != NULL)
         {
             *r = '\\';
             ++r;
@@ -334,15 +328,15 @@ static int ZenityErrorBox(char *message)
 
     escaped_message = EscapeShellString(message);
 
-    errorboxpath_size = strlen(ZENITY_BINARY) + strlen(escaped_message) + 19;
-    errorboxpath = malloc(errorboxpath_size);
+    errorboxpath_size = C_strlen(ZENITY_BINARY) + C_strlen(escaped_message) + 19;
+    errorboxpath = C_malloc(errorboxpath_size);
     M_snprintf(errorboxpath, errorboxpath_size, "%s --error --text=%s",
                ZENITY_BINARY, escaped_message);
 
-    result = system(errorboxpath);
+    result = C_system(errorboxpath);
 
-    free(errorboxpath);
-    free(escaped_message);
+    C_free(errorboxpath);
+    C_free(escaped_message);
 
     return result;
 }
@@ -365,7 +359,7 @@ void I_Error (char *error, ...)
 
     if (already_quitting)
     {
-        fprintf(stderr, "Warning: recursive call to I_Error detected.\n");
+        C_fprintf(C_stderr(), "Warning: recursive call to I_Error detected.\n");
 #if ORIGCODE
         exit(-1);
 #endif
@@ -378,14 +372,14 @@ void I_Error (char *error, ...)
     // Message first.
     va_start(argptr, error);
     //fprintf(stderr, "\nError: ");
-    vfprintf(stderr, error, argptr);
-    fprintf(stderr, "\n\n");
+    C_vfprintf(C_stderr(), error, argptr);
+    C_fprintf(C_stderr(), "\n\n");
     va_end(argptr);
-    fflush(stderr);
+    C_fflush(C_stderr());
 
     // Write a copy of the message into buffer.
     va_start(argptr, error);
-    memset(msgbuf, 0, sizeof(msgbuf));
+    C_memset(msgbuf, 0, sizeof(msgbuf));
     M_vsnprintf(msgbuf, sizeof(msgbuf), error, argptr);
     va_end(argptr);
 
@@ -450,8 +444,8 @@ void I_Error (char *error, ...)
     }
 #elif defined(__DJGPP__)
     {
-        printf("%s\n", msgbuf);
-        exit(-1);
+        C_printf("%s\n", msgbuf);
+        C_exit(-1);
     }
 
 #else
@@ -464,7 +458,7 @@ void I_Error (char *error, ...)
 #if ORIGCODE
     SDL_Quit();
 
-    exit(-1);
+    C_exit(-1);
 #else
     while (true)
     {
@@ -526,15 +520,15 @@ boolean I_GetMemoryValue(unsigned int offset, void *value, int size)
 
         if (p > 0)
         {
-            if (!strcasecmp(myargv[p + 1], "dos622"))
+            if (!C_strcasecmp(myargv[p + 1], "dos622"))
             {
                 dos_mem_dump = mem_dump_dos622;
             }
-            if (!strcasecmp(myargv[p + 1], "dos71"))
+            if (!C_strcasecmp(myargv[p + 1], "dos71"))
             {
                 dos_mem_dump = mem_dump_win98;
             }
-            else if (!strcasecmp(myargv[p + 1], "dosbox"))
+            else if (!C_strcasecmp(myargv[p + 1], "dosbox"))
             {
                 dos_mem_dump = mem_dump_dosbox;
             }

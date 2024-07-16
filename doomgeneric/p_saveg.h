@@ -20,7 +20,7 @@
 #ifndef __P_SAVEG__
 #define __P_SAVEG__
 
-#include <stdio.h>
+#include "c_lib.h"
 
 // maximum size of a savegame description
 
@@ -55,7 +55,7 @@ void P_UnArchiveThinkers (void);
 void P_ArchiveSpecials (void);
 void P_UnArchiveSpecials (void);
 
-extern FILE *save_stream;
+extern file_t *save_stream;
 extern boolean savegame_error;
 
 

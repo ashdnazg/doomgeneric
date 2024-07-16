@@ -16,9 +16,7 @@
 //        Archiving: SaveGame I/O.
 //
 
-
-#include <stdio.h>
-#include <stdlib.h>
+#include "c_lib.h"
 
 #include "dstrings.h"
 #include "deh_main.h"
@@ -36,7 +34,7 @@
 #define SAVEGAME_EOF 0x1d
 #define VERSIONSIZE 16
 
-FILE *save_stream;
+file_t *save_stream;
 int savegamelength;
 boolean savegame_error;
 
@@ -66,8 +64,8 @@ char *P_SaveGameFile(int slot)
 
     if (filename == NULL)
     {
-        filename_size = strlen(savegamedir) + 32;
-        filename = malloc(filename_size);
+        filename_size = C_strlen(savegamedir) + 32;
+        filename = C_malloc(filename_size);
     }
 
     DEH_snprintf(basename, 32, SAVEGAMENAME "%d.dsg", slot);
@@ -82,12 +80,12 @@ static byte saveg_read8(void)
 {
     byte result;
 
-    if (fread(&result, 1, 1, save_stream) < 1)
+    if (C_fread(&result, 1, 1, save_stream) < 1)
     {
         if (!savegame_error)
         {
-            fprintf(stderr, "saveg_read8: Unexpected end of file while "
-                            "reading save game\n");
+            C_fprintf(C_stderr(), "saveg_read8: Unexpected end of file while "
+                                  "reading save game\n");
 
             savegame_error = true;
         }
@@ -98,11 +96,11 @@ static byte saveg_read8(void)
 
 static void saveg_write8(byte value)
 {
-    if (fwrite(&value, 1, 1, save_stream) < 1)
+    if (C_fwrite(&value, 1, 1, save_stream) < 1)
     {
         if (!savegame_error)
         {
-            fprintf(stderr, "saveg_write8: Error while writing save game\n");
+            C_fprintf(C_stderr(), "saveg_write8: Error while writing save game\n");
 
             savegame_error = true;
         }
@@ -153,7 +151,7 @@ static void saveg_read_pad(void)
     int padding;
     int i;
 
-    pos = ftell(save_stream);
+    pos = C_ftell(save_stream);
 
     padding = (4 - (pos & 3)) & 3;
 
@@ -169,7 +167,7 @@ static void saveg_write_pad(void)
     int padding;
     int i;
 
-    pos = ftell(save_stream);
+    pos = C_ftell(save_stream);
 
     padding = (4 - (pos & 3)) & 3;
 
@@ -1354,7 +1352,7 @@ void P_WriteSaveGameHeader(char *description)
     for (; i<SAVESTRINGSIZE; ++i)
         saveg_write8(0);
 
-    memset(name, 0, sizeof(name));
+    C_memset(name, 0, sizeof(name));
     M_snprintf(name, sizeof(name), "version %i", G_VanillaVersionCode());
 
     for (i=0; i<VERSIONSIZE; ++i)
@@ -1391,9 +1389,9 @@ boolean P_ReadSaveGameHeader(void)
     for (i=0; i<VERSIONSIZE; ++i)
         read_vcheck[i] = saveg_read8();
 
-    memset(vcheck, 0, sizeof(vcheck));
+    C_memset(vcheck, 0, sizeof(vcheck));
     M_snprintf(vcheck, sizeof(vcheck), "version %i", G_VanillaVersionCode());
-    if (strcmp(read_vcheck, vcheck) != 0)
+    if (C_strcmp(read_vcheck, vcheck) != 0)
         return false;                                // bad version
 
     gameskill = saveg_read8();

@@ -15,11 +15,7 @@
 // DESCRIPTION:
 //
 
-
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "c_lib.h"
 
 #include "doomtype.h"
 #include "i_system.h"
@@ -46,7 +42,7 @@ int M_CheckParmWithArgs(char *check, int num_args)
 
     for (i = 1; i < myargc - num_args; i++)
     {
-        if (!strcasecmp(check, myargv[i]))
+        if (!C_strcasecmp(check, myargv[i]))
             return i;
     }
 
@@ -91,13 +87,13 @@ static void LoadResponseFile(int argv_index)
 
     if (handle == NULL)
     {
-        printf ("\nNo such response file!");
+        C_printf ("\nNo such response file!");
 #if ORIGCODE
-        exit(1);
+        C_exit(1);
 #endif
     }
 
-    printf("Found response file %s!\n", response_filename);
+    C_printf("Found response file %s!\n", response_filename);
 
     size = M_FileLength(handle);
 
@@ -106,7 +102,7 @@ static void LoadResponseFile(int argv_index)
     // at the end of the response file, in which case a '\0' will be
     // needed.
 
-    file = malloc(size + 1);
+    file = C_malloc(size + 1);
 
     i = 0;
 
@@ -126,9 +122,9 @@ static void LoadResponseFile(int argv_index)
 
     // Create new arguments list array
 
-    newargv = malloc(sizeof(char *) * MAXARGVS);
+    newargv = C_malloc(sizeof(char *) * MAXARGVS);
     newargc = 0;
-    memset(newargv, 0, sizeof(char *) * MAXARGVS);
+    C_memset(newargv, 0, sizeof(char *) * MAXARGVS);
 
     // Copy all the arguments in the list up to the response file
 
@@ -251,7 +247,7 @@ char *M_GetExecutableName(void)
 {
     char *sep;
 
-    sep = strrchr(myargv[0], DIR_SEPARATOR);
+    sep = C_strrchr(myargv[0], DIR_SEPARATOR);
 
     if (sep == NULL)
     {

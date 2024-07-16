@@ -15,8 +15,7 @@
 //    Exit text-mode ENDOOM screen.
 //
 
-#include <stdio.h>
-#include <string.h>
+#include "c_lib.h"
 
 #include "config.h"
 #include "doomtype.h"
@@ -35,7 +34,7 @@
 #define ENDOOM_W 80
 #define ENDOOM_H 25
 
-// 
+//
 // Displays the text mode ending screen after the game quits
 //
 
@@ -60,9 +59,9 @@ void I_Endoom(byte *endoom_data)
 
     for (y=0; y<TXT_SCREEN_H; ++y)
     {
-        memcpy(screendata + (y * TXT_SCREEN_W * 2),
-               endoom_data + (y * ENDOOM_W + indent) * 2,
-               TXT_SCREEN_W * 2);
+        C_memcpy(screendata + (y * TXT_SCREEN_W * 2),
+                 endoom_data + (y * ENDOOM_W + indent) * 2,
+                 TXT_SCREEN_W * 2);
     }
 
     // Wait for a keypress

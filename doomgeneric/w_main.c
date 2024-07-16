@@ -16,6 +16,8 @@
 //     Common code to parse command line, identifying WAD files to load.
 //
 
+#include "c_lib.h"
+
 #include "doomfeatures.h"
 #include "d_iwad.h"
 #include "m_argv.h"
@@ -186,7 +188,7 @@ boolean W_ParseCommandLine(void)
 
             filename = D_TryFindWADByName(myargv[p]);
 
-            printf(" adding %s\n", filename);
+            C_printf(" adding %s\n", filename);
             W_AddFile(filename);
         }
     }

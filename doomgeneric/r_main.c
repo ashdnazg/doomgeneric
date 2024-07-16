@@ -19,12 +19,7 @@
 //
 
 
-
-
-
-#include <stdlib.h>
-#include <math.h>
-
+#include "c_lib.h"
 
 #include "doomdef.h"
 #include "d_loop.h"
@@ -384,8 +379,8 @@ R_PointToDist
     fixed_t        dist;
     fixed_t     frac;
 
-    dx = abs(x - viewx);
-    dy = abs(y - viewy);
+    dx = C_abs(x - viewx);
+    dy = C_abs(y - viewy);
 
     if (dy>dx)
     {
@@ -726,13 +721,13 @@ void R_ExecuteSetViewSize (void)
     for (i=0 ; i<viewheight ; i++)
     {
         dy = ((i-viewheight/2)<<FRACBITS)+FRACUNIT/2;
-        dy = abs(dy);
+        dy = C_abs(dy);
         yslope[i] = FixedDiv ( (viewwidth<<detailshift)/2*FRACUNIT, dy);
     }
 
     for (i=0 ; i<viewwidth ; i++)
     {
-        cosadj = abs(finecosine[xtoviewangle[i]>>ANGLETOFINESHIFT]);
+        cosadj = C_abs(finecosine[xtoviewangle[i]>>ANGLETOFINESHIFT]);
         distscale[i] = FixedDiv (FRACUNIT,cosadj);
     }
 
@@ -767,21 +762,21 @@ void R_ExecuteSetViewSize (void)
 void R_Init (void)
 {
     R_InitData ();
-    printf (".");
+    C_printf (".");
     R_InitPointToAngle ();
-    printf (".");
+    C_printf (".");
     R_InitTables ();
     // viewwidth / viewheight / detailLevel are set by the defaults
-    printf (".");
+    C_printf (".");
 
     R_SetViewSize (screenblocks, detailLevel);
     R_InitPlanes ();
-    printf (".");
+    C_printf (".");
     R_InitLightTables ();
-    printf (".");
+    C_printf (".");
     R_InitSkyMap ();
     R_InitTranslationTables ();
-    printf (".");
+    C_printf (".");
 
     framecount = 0;
 }

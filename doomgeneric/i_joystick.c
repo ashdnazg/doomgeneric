@@ -20,10 +20,6 @@
 #include "SDL_joystick.h"
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "doomtype.h"
 #include "d_event.h"
 #include "i_joystick.h"
@@ -38,7 +34,7 @@
 #define DEAD_ZONE (32768 / 3)
 
 #ifdef ORIGCODE
-static SDL_Joystick *joystick = NULL;
+static SDL_Joystick *joystick = 0
 #endif
 
 // Configuration variables:
@@ -77,10 +73,10 @@ static int joystick_physical_buttons[NUM_VIRTUAL_BUTTONS] = {
 void I_ShutdownJoystick(void)
 {
 #ifdef ORIGCODE
-    if (joystick != NULL)
+    if (joystick != 0)
     {
         SDL_JoystickClose(joystick);
-        joystick = NULL;
+        joystick = 0;
         SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
     }
 #endif
@@ -127,7 +123,7 @@ void I_InitJoystick(void)
 
     if (joystick_index < 0 || joystick_index >= SDL_NumJoysticks())
     {
-        printf("I_InitJoystick: Invalid joystick ID: %i\n", joystick_index);
+        C_printf("I_InitJoystick: Invalid joystick ID: %i\n", joystick_index);
         SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
         return;
     }
@@ -136,10 +132,10 @@ void I_InitJoystick(void)
 
     joystick = SDL_JoystickOpen(joystick_index);
 
-    if (joystick == NULL)
+    if (joystick == 0)
     {
-        printf("I_InitJoystick: Failed to open joystick #%i\n",
-               joystick_index);
+        C_printf("I_InitJoystick: Failed to open joystick #%i\n",
+                 joystick_index);
         SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
         return;
     }
@@ -148,12 +144,12 @@ void I_InitJoystick(void)
      || !IsValidAxis(joystick_y_axis)
      || !IsValidAxis(joystick_strafe_axis))
     {
-        printf("I_InitJoystick: Invalid joystick axis for joystick #%i "
-               "(run joystick setup again)\n",
-               joystick_index);
+        C_printf("I_InitJoystick: Invalid joystick axis for joystick #%i "
+                 "(run joystick setup again)\n",
+                 joystick_index);
 
         SDL_JoystickClose(joystick);
-        joystick = NULL;
+        joystick = 0;
         SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
     }
 
@@ -161,7 +157,7 @@ void I_InitJoystick(void)
 
     // Initialized okay!
 
-    printf("I_InitJoystick: %s\n", SDL_JoystickName(joystick_index));
+    C_printf("I_InitJoystick: %s\n", SDL_JoystickName(joystick_index));
 
     I_AtExit(I_ShutdownJoystick, true);
 #endif
@@ -321,7 +317,7 @@ static int GetAxisState(int axis, int invert)
 void I_UpdateJoystick(void)
 {
 #ifdef ORIGCODE
-    if (joystick != NULL)
+    if (joystick != 0)
     {
         event_t ev;
 

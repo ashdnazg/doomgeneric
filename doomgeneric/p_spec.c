@@ -21,7 +21,7 @@
 //
 
 
-#include <stdlib.h>
+#include "c_lib.h"
 
 #include "doomdef.h"
 #include "doomstat.h"
@@ -1159,7 +1159,7 @@ void P_UpdateSpecials (void)
                     break;
                 }
                 S_StartSound(&buttonlist[i].soundorg,sfx_swtchn);
-                memset(&buttonlist[i],0,sizeof(button_t));
+                C_memset(&buttonlist[i],0,sizeof(button_t));
             }
         }
 }
@@ -1228,11 +1228,11 @@ static void DonutOverrun(fixed_t *s3_floorheight, short *s3_floorpic,
 
             if (tmp_s3_floorpic >= numflats)
             {
-                fprintf(stderr,
-                        "DonutOverrun: The second parameter for \"-donut\" "
-                        "switch should be greater than 0 and less than number "
-                        "of flats (%d). Using default value (%d) instead. \n",
-                        numflats, DONUT_FLOORPIC_DEFAULT);
+                C_fprintf(C_stderr(),
+                          "DonutOverrun: The second parameter for \"-donut\" "
+                          "switch should be greater than 0 and less than number "
+                          "of flats (%d). Using default value (%d) instead. \n",
+                          numflats, DONUT_FLOORPIC_DEFAULT);
                 tmp_s3_floorpic = DONUT_FLOORPIC_DEFAULT;
             }
         }
@@ -1290,9 +1290,9 @@ int EV_DoDonut(line_t*        line)
 
         if (s2 == NULL)
         {
-            fprintf(stderr,
-                    "EV_DoDonut: linedef had no second sidedef! "
-                    "Unexpected behavior may occur in Vanilla Doom. \n");
+            C_fprintf(C_stderr(),
+                      "EV_DoDonut: linedef had no second sidedef! "
+                      "Unexpected behavior may occur in Vanilla Doom. \n");
             break;
         }
 
@@ -1311,10 +1311,10 @@ int EV_DoDonut(line_t*        line)
                 // s3->floorpic is a short at 0000:0008
                 // Trying to emulate
 
-                fprintf(stderr,
-                        "EV_DoDonut: WARNING: emulating buffer overrun due to "
-                        "NULL back sector. "
-                        "Unexpected behavior may occur in Vanilla Doom.\n");
+                C_fprintf(C_stderr(),
+                          "EV_DoDonut: WARNING: emulating buffer overrun due to "
+                          "NULL back sector. "
+                          "Unexpected behavior may occur in Vanilla Doom.\n");
 
                 DonutOverrun(&s3_floorheight, &s3_floorpic, line, s1);
             }
@@ -1482,7 +1482,7 @@ void P_SpawnSpecials (void)
         activeplats[i] = NULL;
 
     for (i = 0;i < MAXBUTTONS;i++)
-        memset(&buttonlist[i],0,sizeof(button_t));
+        C_memset(&buttonlist[i],0,sizeof(button_t));
 
     // UNUSED: no horizonal sliders.
     //        P_InitSlidingDoorFrames();

@@ -15,11 +15,7 @@
 // DESCRIPTION:  none
 //
 
-
-
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
+#include "c_lib.h"
 
 #include "doomdef.h"
 #include "doomkeys.h"
@@ -329,7 +325,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     int                forward;
     int                side;
 
-    memset(cmd, 0, sizeof(ticcmd_t));
+    C_memset(cmd, 0, sizeof(ticcmd_t));
 
     cmd->consistancy =
         consistancy[consoleplayer][maketic%BACKUPTICS];
@@ -649,7 +645,7 @@ void G_DoLoadLevel (void)
         turbodetected[i] = false;
         if (playeringame[i] && players[i].playerstate == PST_DEAD)
             players[i].playerstate = PST_REBORN;
-        memset (players[i].frags,0,sizeof(players[i].frags));
+        C_memset (players[i].frags,0,sizeof(players[i].frags));
     }
 
     P_SetupLevel (gameepisode, gamemap, 0, gameskill);
@@ -659,12 +655,12 @@ void G_DoLoadLevel (void)
 
     // clear cmd building stuff
 
-    memset (gamekeydown, 0, sizeof(gamekeydown));
+    C_memset (gamekeydown, 0, sizeof(gamekeydown));
     joyxmove = joyymove = joystrafemove = 0;
     mousex = mousey = 0;
     sendpause = sendsave = paused = false;
-    memset(mousearray, 0, sizeof(mousearray));
-    memset(joyarray, 0, sizeof(joyarray));
+    C_memset(mousearray, 0, sizeof(mousearray));
+    C_memset(joyarray, 0, sizeof(joyarray));
 
     if (testcontrols)
     {
@@ -791,7 +787,7 @@ boolean G_Responder (event_t* ev)
         // Perform a low pass filter on this so that the thermometer
         // appears to move smoothly.
 
-        testcontrols_mousespeed = abs(ev->data2);
+        testcontrols_mousespeed = C_abs(ev->data2);
     }
 
     // If the next/previous weapon keys are pressed, set the next_weapon
@@ -911,7 +907,7 @@ void G_Ticker (void)
         {
             cmd = &players[i].cmd;
 
-            memcpy(cmd, &netcmds[i], sizeof(ticcmd_t));
+            C_memcpy(cmd, &netcmds[i], sizeof(ticcmd_t));
 
             if (demoplayback)
                 G_ReadDemoTiccmd (cmd);
@@ -1054,8 +1050,8 @@ void G_PlayerFinishLevel (int player)
 
     p = &players[player];
 
-    memset (p->powers, 0, sizeof (p->powers));
-    memset (p->cards, 0, sizeof (p->cards));
+    C_memset (p->powers, 0, sizeof (p->powers));
+    C_memset (p->cards, 0, sizeof (p->cards));
     p->mo->flags &= ~MF_SHADOW;                // cancel invisibility
     p->extralight = 0;                        // cancel gun flashes
     p->fixedcolormap = 0;                // cancel ir gogles
@@ -1078,15 +1074,15 @@ void G_PlayerReborn (int player)
     int                itemcount;
     int                secretcount;
 
-    memcpy (frags,players[player].frags,sizeof(frags));
+    C_memcpy (frags,players[player].frags,sizeof(frags));
     killcount = players[player].killcount;
     itemcount = players[player].itemcount;
     secretcount = players[player].secretcount;
 
     p = &players[player];
-    memset (p, 0, sizeof(*p));
+    C_memset (p, 0, sizeof(*p));
 
-    memcpy (players[player].frags, frags, sizeof(players[player].frags));
+    C_memcpy (players[player].frags, frags, sizeof(players[player].frags));
     players[player].killcount = killcount;
     players[player].itemcount = itemcount;
     players[player].secretcount = secretcount;
@@ -1474,7 +1470,7 @@ void G_DoCompleted (void)
         wminfo.plyr[i].sitems = players[i].itemcount;
         wminfo.plyr[i].ssecret = players[i].secretcount;
         wminfo.plyr[i].stime = leveltime;
-        memcpy (wminfo.plyr[i].frags, players[i].frags
+        C_memcpy (wminfo.plyr[i].frags, players[i].frags
                 , sizeof(wminfo.plyr[i].frags));
     }
 
@@ -1551,7 +1547,7 @@ void G_DoLoadGame (void)
 
     gameaction = ga_nothing;
 
-    save_stream = fopen(savename, "rb");
+    save_stream = C_fopen(savename, "rb");
 
     if (save_stream == NULL)
     {
@@ -1562,7 +1558,7 @@ void G_DoLoadGame (void)
 
     if (!P_ReadSaveGameHeader())
     {
-        fclose(save_stream);
+        C_fclose(save_stream);
         return;
     }
 
@@ -1582,7 +1578,7 @@ void G_DoLoadGame (void)
     if (!P_ReadSaveGameEOF())
         I_Error ("Bad savegame");
 
-    fclose(save_stream);
+    C_fclose(save_stream);
 
     if (setsizeneeded)
             R_ExecuteSetViewSize ();
@@ -1621,14 +1617,14 @@ void G_DoSaveGame (void)
     // and then rename it at the end if it was successfully written.
     // This prevents an existing savegame from being overwritten by
     // a corrupted one, or if a savegame buffer overrun occurs.
-    save_stream = fopen(temp_savegame_file, "wb");
+    save_stream = C_fopen(temp_savegame_file, "wb");
 
     if (save_stream == NULL)
     {
         // Failed to save the game, so we're going to have to abort. But
         // to be nice, save to somewhere else before we call I_Error().
         recovery_savegame_file = M_TempFile("recovery.dsg");
-        save_stream = fopen(recovery_savegame_file, "wb");
+        save_stream = C_fopen(recovery_savegame_file, "wb");
         if (save_stream == NULL)
         {
             I_Error("Failed to open either '%s' or '%s' to write savegame.",
@@ -1650,14 +1646,14 @@ void G_DoSaveGame (void)
     // Enforce the same savegame size limit as in Vanilla Doom,
     // except if the vanilla_savegame_limit setting is turned off.
 
-    if (vanilla_savegame_limit && ftell(save_stream) > SAVEGAMESIZE)
+    if (vanilla_savegame_limit && C_ftell(save_stream) > SAVEGAMESIZE)
     {
         I_Error ("Savegame buffer overrun");
     }
 
     // Finish up, close the savegame file.
 
-    fclose(save_stream);
+    C_fclose(save_stream);
 
     if (recovery_savegame_file != NULL)
     {
@@ -1672,8 +1668,8 @@ void G_DoSaveGame (void)
     // Now rename the temporary savegame file to the actual savegame
     // file, overwriting the old savegame if there was one there.
 
-    remove(savegame_file);
-    rename(temp_savegame_file, savegame_file);
+    C_remove(savegame_file);
+    C_rename(temp_savegame_file, savegame_file);
 
     gameaction = ga_nothing;
     M_StringCopy(savedescription, "", sizeof(savedescription));
@@ -1942,7 +1938,7 @@ static void IncreaseDemoBuffer(void)
 
     // Copy over the old data
 
-    memcpy(new_demobuffer, demobuffer, current_length);
+    C_memcpy(new_demobuffer, demobuffer, current_length);
 
     // Free the old buffer and point the demo pointers at the new buffer.
 
@@ -2014,7 +2010,7 @@ void G_RecordDemo (char *name)
     int maxsize;
 
     usergame = false;
-    demoname_size = strlen(name) + 5;
+    demoname_size = C_strlen(name) + 5;
     demoname = Z_Malloc(demoname_size, PU_STATIC, NULL);
     M_snprintf(demoname, demoname_size, "%s.lmp", name);
     maxsize = 0x20000;
@@ -2029,7 +2025,7 @@ void G_RecordDemo (char *name)
 
     i = M_CheckParmWithArgs("-maxdemo", 1);
     if (i)
-        maxsize = atoi(myargv[i+1])*1024;
+        maxsize = C_atoi(myargv[i+1])*1024;
     demobuffer = Z_Malloc (maxsize,PU_STATIC,NULL);
     demoend = demobuffer + maxsize;
 
@@ -2181,8 +2177,8 @@ void G_DoPlayDemo (void)
                         "    This appears to be %s.";
 
         //I_Error(message, demoversion, G_VanillaVersionCode(),
-        printf(message, demoversion, G_VanillaVersionCode(),
-                         DemoVersionDescription(demoversion));
+        C_printf(message, demoversion, G_VanillaVersionCode(),
+                          DemoVersionDescription(demoversion));
     }
 
     skill = *demo_p++;

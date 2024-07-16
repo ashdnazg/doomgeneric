@@ -16,9 +16,7 @@
 // memory.
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "c_lib.h"
 
 #include "memio.h"
 
@@ -61,7 +59,7 @@ size_t mem_fread(void *buf, size_t size, size_t nmemb, MEMFILE *stream)
 
         if (stream->mode != MODE_READ)
         {
-                printf("not a read stream\n");
+                C_printf("not a read stream\n");
                 return -1;
         }
 
@@ -76,7 +74,7 @@ size_t mem_fread(void *buf, size_t size, size_t nmemb, MEMFILE *stream)
 
         // Copy bytes to buffer
 
-        memcpy(buf, stream->buf + stream->position, items * size);
+        C_memcpy(buf, stream->buf + stream->position, items * size);
 
         // Update position
 
@@ -123,7 +121,7 @@ size_t mem_fwrite(const void *ptr, size_t size, size_t nmemb, MEMFILE *stream)
                 unsigned char *newbuf;
 
                 newbuf = Z_Malloc(stream->alloced * 2, PU_STATIC, 0);
-                memcpy(newbuf, stream->buf, stream->alloced);
+                C_memcpy(newbuf, stream->buf, stream->alloced);
                 Z_Free(stream->buf);
                 stream->buf = newbuf;
                 stream->alloced *= 2;
@@ -131,7 +129,7 @@ size_t mem_fwrite(const void *ptr, size_t size, size_t nmemb, MEMFILE *stream)
 
         // Copy into buffer
 
-        memcpy(stream->buf + stream->position, ptr, bytes);
+        C_memcpy(stream->buf + stream->position, ptr, bytes);
         stream->position += bytes;
 
         if (stream->position > stream->buflen)
@@ -189,7 +187,7 @@ int mem_fseek(MEMFILE *stream, signed long position, mem_rel_t whence)
         }
         else
         {
-                printf("Error seeking to %i\n", newpos);
+                C_printf("Error seeking to %i\n", newpos);
                 return -1;
         }
 }

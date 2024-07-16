@@ -17,8 +17,7 @@
 //        Shooting and aiming.
 //
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "c_lib.h"
 
 #include "deh_misc.h"
 
@@ -103,8 +102,8 @@ boolean PIT_StompThing (mobj_t* thing)
 
     blockdist = thing->radius + tmthing->radius;
 
-    if ( abs(thing->x - tmx) >= blockdist
-         || abs(thing->y - tmy) >= blockdist )
+    if ( C_abs(thing->x - tmx) >= blockdist
+         || C_abs(thing->y - tmy) >= blockdist )
     {
         // didn't hit it
         return true;
@@ -283,8 +282,8 @@ boolean PIT_CheckThing (mobj_t* thing)
 
     blockdist = thing->radius + tmthing->radius;
 
-    if ( abs(thing->x - tmx) >= blockdist
-         || abs(thing->y - tmy) >= blockdist )
+    if ( C_abs(thing->x - tmx) >= blockdist
+         || C_abs(thing->y - tmy) >= blockdist )
     {
         // didn't hit it
         return true;
@@ -1223,8 +1222,8 @@ boolean PIT_RadiusAttack (mobj_t* thing)
         || thing->type == MT_SPIDER)
         return true;
 
-    dx = abs(thing->x - bombspot->x);
-    dy = abs(thing->y - bombspot->y);
+    dx = C_abs(thing->x - bombspot->x);
+    dy = C_abs(thing->y - bombspot->y);
 
     dist = dx>dy ? dx : dy;
     dist = (dist - thing->radius) >> FRACBITS;
@@ -1439,9 +1438,9 @@ static void SpechitOverrun(line_t *ld)
             nofit = addr;
             break;
         default:
-            fprintf(stderr, "SpechitOverrun: Warning: unable to emulate"
-                            "an overrun where numspechit=%i\n",
-                            numspechit);
+            C_fprintf(C_stderr(), "SpechitOverrun: Warning: unable to emulate"
+                                  "an overrun where numspechit=%i\n",
+                                  numspechit);
             break;
     }
 }
