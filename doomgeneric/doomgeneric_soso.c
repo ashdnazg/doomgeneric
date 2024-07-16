@@ -91,7 +91,7 @@ static unsigned char convertToDoomKey(unsigned char scancode)
 
 static void addKeyToQueue(int pressed, unsigned char keyCode)
 {
-	//printf("key hex %x decimal %d\n", keyCode, keyCode);
+        //printf("key hex %x decimal %d\n", keyCode, keyCode);
 
         unsigned char key = convertToDoomKey(keyCode);
 
@@ -267,7 +267,7 @@ int main(int argc, char **argv)
     {
         doomgeneric_Tick();
     }
-    
+
 
     return 0;
 }

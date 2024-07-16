@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // $Id:$
@@ -18,7 +18,7 @@
 // $Log:$
 //
 // DESCRIPTION:
-//	DOOM graphics stuff for X11, UNIX.
+//        DOOM graphics stuff for X11, UNIX.
 //
 //-----------------------------------------------------------------------------
 
@@ -51,24 +51,24 @@ rcsid[] = "$Id: i_x.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 
 struct FB_BitField
 {
-	uint32_t offset;			/* beginning of bitfield	*/
-	uint32_t length;			/* length of bitfield		*/
+        uint32_t offset;                        /* beginning of bitfield        */
+        uint32_t length;                        /* length of bitfield                */
 };
 
 struct FB_ScreenInfo
 {
-	uint32_t xres;			/* visible resolution		*/
-	uint32_t yres;
-	uint32_t xres_virtual;		/* virtual resolution		*/
-	uint32_t yres_virtual;
+        uint32_t xres;                        /* visible resolution                */
+        uint32_t yres;
+        uint32_t xres_virtual;                /* virtual resolution                */
+        uint32_t yres_virtual;
 
-	uint32_t bits_per_pixel;		/* guess what			*/
-	
-							/* >1 = FOURCC			*/
-	struct FB_BitField red;		/* bitfield in s_Fb mem if true color, */
-	struct FB_BitField green;	/* else only length is significant */
-	struct FB_BitField blue;
-	struct FB_BitField transp;	/* transparency			*/
+        uint32_t bits_per_pixel;                /* guess what                        */
+
+                                                        /* >1 = FOURCC                        */
+        struct FB_BitField red;                /* bitfield in s_Fb mem if true color, */
+        struct FB_BitField green;        /* else only length is significant */
+        struct FB_BitField blue;
+        struct FB_BitField transp;        /* transparency                        */
 };
 
 static struct FB_ScreenInfo s_Fb;
@@ -122,9 +122,9 @@ int usegamma = 0;
 
 typedef struct
 {
-	byte r;
-	byte g;
-	byte b;
+        byte r;
+        byte g;
+        byte b;
 } col_t;
 
 // Palette converted to RGB565
@@ -139,7 +139,7 @@ void cmap_to_rgb565(uint16_t * out, uint8_t * in, int in_pixels)
 
     for (i = 0; i < in_pixels; i++)
     {
-        c = colors[*in]; 
+        c = colors[*in];
         r = ((uint16_t)(c.r >> 3)) << 11;
         g = ((uint16_t)(c.g >> 2)) << 5;
         b = ((uint16_t)(c.b >> 3)) << 0;
@@ -183,30 +183,30 @@ void I_InitGraphics (void)
 {
     int i;
 
-	memset(&s_Fb, 0, sizeof(struct FB_ScreenInfo));
-	s_Fb.xres = DOOMGENERIC_RESX;
-	s_Fb.yres = DOOMGENERIC_RESY;
-	s_Fb.xres_virtual = s_Fb.xres;
-	s_Fb.yres_virtual = s_Fb.yres;
+        memset(&s_Fb, 0, sizeof(struct FB_ScreenInfo));
+        s_Fb.xres = DOOMGENERIC_RESX;
+        s_Fb.yres = DOOMGENERIC_RESY;
+        s_Fb.xres_virtual = s_Fb.xres;
+        s_Fb.yres_virtual = s_Fb.yres;
 
 #ifdef CMAP256
 
-	s_Fb.bits_per_pixel = 8;
+        s_Fb.bits_per_pixel = 8;
 
 #else  // CMAP256
 
-	s_Fb.bits_per_pixel = 32;
+        s_Fb.bits_per_pixel = 32;
 
-	s_Fb.blue.length = 8;
-	s_Fb.green.length = 8;
-	s_Fb.red.length = 8;
-	s_Fb.transp.length = 8;
+        s_Fb.blue.length = 8;
+        s_Fb.green.length = 8;
+        s_Fb.red.length = 8;
+        s_Fb.transp.length = 8;
 
-	s_Fb.blue.offset = 0;
-	s_Fb.green.offset = 8;
-	s_Fb.red.offset = 16;
-	s_Fb.transp.offset = 24;
-	
+        s_Fb.blue.offset = 0;
+        s_Fb.green.offset = 8;
+        s_Fb.red.offset = 16;
+        s_Fb.transp.offset = 24;
+
 #endif  // CMAP256
 
     printf("I_InitGraphics: framebuffer: x_res: %d, y_res: %d, x_virtual: %d, y_virtual: %d, bpp: %d\n",
@@ -232,9 +232,9 @@ void I_InitGraphics (void)
 
 
     /* Allocate screen to draw to */
-	I_VideoBuffer = (byte*)Z_Malloc (SCREENWIDTH * SCREENHEIGHT, PU_STATIC, NULL);  // For DOOM to draw on
+        I_VideoBuffer = (byte*)Z_Malloc (SCREENWIDTH * SCREENHEIGHT, PU_STATIC, NULL);  // For DOOM to draw on
 
-	screenvisible = true;
+        screenvisible = true;
 
     extern void I_InitInput(void);
     I_InitInput();
@@ -242,7 +242,7 @@ void I_InitGraphics (void)
 
 void I_ShutdownGraphics (void)
 {
-	Z_Free (I_VideoBuffer);
+        Z_Free (I_VideoBuffer);
 }
 
 void I_StartFrame (void)
@@ -252,7 +252,7 @@ void I_StartFrame (void)
 
 void I_StartTic (void)
 {
-	I_GetEvent();
+        I_GetEvent();
 }
 
 void I_UpdateNoBlit (void)
@@ -311,7 +311,7 @@ void I_FinishUpdate (void)
         line_in += SCREENWIDTH;
     }
 
-	DG_DrawFrame();
+        DG_DrawFrame();
 }
 
 //
@@ -325,27 +325,27 @@ void I_ReadScreen (byte* scr)
 //
 // I_SetPalette
 //
-#define GFX_RGB565(r, g, b)			((((r & 0xF8) >> 3) << 11) | (((g & 0xFC) >> 2) << 5) | ((b & 0xF8) >> 3))
-#define GFX_RGB565_R(color)			((0xF800 & color) >> 11)
-#define GFX_RGB565_G(color)			((0x07E0 & color) >> 5)
-#define GFX_RGB565_B(color)			(0x001F & color)
+#define GFX_RGB565(r, g, b)                        ((((r & 0xF8) >> 3) << 11) | (((g & 0xFC) >> 2) << 5) | ((b & 0xF8) >> 3))
+#define GFX_RGB565_R(color)                        ((0xF800 & color) >> 11)
+#define GFX_RGB565_G(color)                        ((0x07E0 & color) >> 5)
+#define GFX_RGB565_B(color)                        (0x001F & color)
 
 void I_SetPalette (byte* palette)
 {
-	int i;
-	//col_t* c;
+        int i;
+        //col_t* c;
 
-	//for (i = 0; i < 256; i++)
-	//{
-	//	c = (col_t*)palette;
+        //for (i = 0; i < 256; i++)
+        //{
+        //        c = (col_t*)palette;
 
-	//	rgb565_palette[i] = GFX_RGB565(gammatable[usegamma][c->r],
-	//								   gammatable[usegamma][c->g],
-	//								   gammatable[usegamma][c->b]);
+        //        rgb565_palette[i] = GFX_RGB565(gammatable[usegamma][c->r],
+        //                                                                   gammatable[usegamma][c->g],
+        //                                                                   gammatable[usegamma][c->b]);
 
-	//	palette += 3;
-	//}
-    
+        //        palette += 3;
+        //}
+
 
     /* performance boost:
      * map to the right pixel format over here! */
@@ -379,9 +379,9 @@ int I_GetPaletteIndex (int r, int g, int b)
 
     for (i = 0; i < 256; ++i)
     {
-    	color.r = GFX_RGB565_R(rgb565_palette[i]);
-    	color.g = GFX_RGB565_G(rgb565_palette[i]);
-    	color.b = GFX_RGB565_B(rgb565_palette[i]);
+            color.r = GFX_RGB565_R(rgb565_palette[i]);
+            color.g = GFX_RGB565_G(rgb565_palette[i]);
+            color.b = GFX_RGB565_B(rgb565_palette[i]);
 
         diff = (r - color.r) * (r - color.r)
              + (g - color.g) * (g - color.g)
@@ -412,7 +412,7 @@ void I_EndRead (void)
 
 void I_SetWindowTitle (char *title)
 {
-	DG_SetWindowTitle(title);
+        DG_SetWindowTitle(title);
 }
 
 void I_GraphicsCheckCommandLine (void)

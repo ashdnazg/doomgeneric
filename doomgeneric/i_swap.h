@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	Endianess handling, swapping 16bit and 32bit.
+//        Endianess handling, swapping 16bit and 32bit.
 //
 
 
@@ -59,7 +59,7 @@
 // cosmito from lsdldoom
 #define doom_swap_s(x) \
         ((short int)((((unsigned short int)(x) & 0x00ff) << 8) | \
-                              (((unsigned short int)(x) & 0xff00) >> 8))) 
+                              (((unsigned short int)(x) & 0xff00) >> 8)))
 
 
 #if ( SDL_BYTEORDER == SDL_BIG_ENDIAN )
@@ -73,7 +73,7 @@
 
 
 #else  // FEATURE_SOUND
-	
+
 #define SHORT(x)  ((signed short) (x))
 #define LONG(x)   ((signed int) (x))
 

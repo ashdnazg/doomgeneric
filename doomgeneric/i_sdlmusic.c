@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	System interface for music.
+//        System interface for music.
 //
 
 
@@ -102,7 +102,7 @@ static const char *subst_config_filenames[] =
 
 static boolean music_initialized = false;
 
-// If this is true, this module initialized SDL sound and has the 
+// If this is true, this module initialized SDL sound and has the
 // responsibility to shut it down
 
 static boolean sdl_was_initialized = false;
@@ -139,7 +139,7 @@ static unsigned int ParseVorbisTime(unsigned int samplerate_hz, char *value)
 
     if (strchr(value, ':') == NULL)
     {
-	return atoi(value);
+        return atoi(value);
     }
 
     result = 0;
@@ -158,7 +158,7 @@ static unsigned int ParseVorbisTime(unsigned int samplerate_hz, char *value)
         if (*p == '.')
         {
             return result * samplerate_hz
-	         + (unsigned int) (atof(p) * samplerate_hz);
+                 + (unsigned int) (atof(p) * samplerate_hz);
         }
     }
 
@@ -202,7 +202,7 @@ static void ParseVorbisComments(file_metadata_t *metadata, FILE *fs)
     // We must have read the sample rate already from an earlier header.
     if (metadata->samplerate_hz == 0)
     {
-	return;
+        return;
     }
 
     // Skip the starting part we don't care about.
@@ -212,7 +212,7 @@ static void ParseVorbisComments(file_metadata_t *metadata, FILE *fs)
     }
     if (fseek(fs, LONG(buf), SEEK_CUR) != 0)
     {
-	return;
+        return;
     }
 
     // Read count field for number of comments.
@@ -227,9 +227,9 @@ static void ParseVorbisComments(file_metadata_t *metadata, FILE *fs)
     {
         // Read length of comment.
         if (fread(&buf, 4, 1, fs) < 1)
-	{
+        {
             return;
-	}
+        }
 
         comment_len = LONG(buf);
 
@@ -340,9 +340,9 @@ static void ParseOggFile(file_metadata_t *metadata, FILE *fs)
 
     for (offset = 0; offset < 100 * 1024; ++offset)
     {
-	// buf[] is used as a sliding window. Each iteration, we
-	// move the buffer one byte to the left and read an extra
-	// byte onto the end.
+        // buf[] is used as a sliding window. Each iteration, we
+        // move the buffer one byte to the left and read an extra
+        // byte onto the end.
         memmove(buf, buf + 1, sizeof(buf) - 1);
 
         if (fread(&buf[6], 1, 1, fs) < 1)
@@ -358,7 +358,7 @@ static void ParseOggFile(file_metadata_t *metadata, FILE *fs)
                     ParseOggIdHeader(metadata, fs);
                     break;
                 case OGG_COMMENT_HEADER:
-		    ParseVorbisComments(metadata, fs);
+                    ParseVorbisComments(metadata, fs);
                     break;
                 default:
                     break;
@@ -1097,7 +1097,7 @@ static void I_SDL_UnRegisterSong(void *handle)
     Mix_FreeMusic(music);
 }
 
-// Determine whether memory block is a .mid file 
+// Determine whether memory block is a .mid file
 
 static boolean IsMid(byte *mem, int len)
 {
@@ -1177,7 +1177,7 @@ static void *I_SDL_RegisterSong(void *data, int len)
     }
     else
     {
-	// Assume a MUS file and try to convert
+        // Assume a MUS file and try to convert
 
         ConvertMus(data, len, filename);
     }
