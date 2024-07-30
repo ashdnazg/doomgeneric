@@ -199,11 +199,11 @@ typedef struct
 // plus skill/visibility flags and attributes.
 typedef struct
 {
-    short                x;
-    short                y;
-    short                angle;
-    short                type;
-    short                options;
+    int                x;
+    int                y;
+    int                angle;
+    int                type;
+    int                options;
 } PACKEDATTR mapthing_t;
 
 

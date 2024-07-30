@@ -359,7 +359,7 @@ void P_LoadThings (int lump)
         // Do not spawn cool, new monsters if !commercial
         if (gamemode != commercial)
         {
-            switch (SHORT(mt->type))
+            switch (mt->type)
             {
               case 68:        // Arachnotron
               case 64:        // Archvile
@@ -379,11 +379,11 @@ void P_LoadThings (int lump)
             break;
 
         // Do spawn all other stuff.
-        spawnthing.x = SHORT(mt->x);
-        spawnthing.y = SHORT(mt->y);
-        spawnthing.angle = SHORT(mt->angle);
-        spawnthing.type = SHORT(mt->type);
-        spawnthing.options = SHORT(mt->options);
+        spawnthing.x = mt->x;
+        spawnthing.y = mt->y;
+        spawnthing.angle = mt->angle;
+        spawnthing.type = mt->type;
+        spawnthing.options = mt->options;
 
         P_SpawnMapThing(&spawnthing);
     }

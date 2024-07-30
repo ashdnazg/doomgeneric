@@ -378,7 +378,7 @@ class MapEditor:
                 except AttributeError:
                     pass
 
-            self.things   = self._unpack_lump(self.Thing,   m["THINGS"].data)
+            self.things   = self._unpack_lump(self.Thing,   m["THINGS"].data, True)
             self.linedefs = self._unpack_lump(self.Linedef, m["LINEDEFS"].data, True)
         except KeyError as e:
             raise ValueError("map is missing %s lump" % e)
