@@ -10,4 +10,4 @@ for k,v in w.maps.items():
 for k,v in new_maps.items():
     w.maps[k] = v.to_lumps()
 
-w.to_file("doom.wad")
+w.to_file("../doomgeneric/doom.wad")

@@ -278,14 +278,21 @@ void P_LoadSectors (int lump)
     ss = sectors;
     for (i=0 ; i<numsectors ; i++, ss++, ms++)
     {
-        ss->floorheight = SHORT(ms->floorheight)<<FRACBITS;
-        ss->ceilingheight = SHORT(ms->ceilingheight)<<FRACBITS;
-        ss->floorpic = R_FlatNumForName(ms->floorpic);
-        ss->ceilingpic = R_FlatNumForName(ms->ceilingpic);
-        ss->lightlevel = SHORT(ms->lightlevel);
-        ss->special = SHORT(ms->special);
-        ss->tag = SHORT(ms->tag);
-        ss->thinglist = NULL;
+        ss->floorheight = ms->floorheight<<FRACBITS;
+        ss->ceilingheight = ms->ceilingheight<<FRACBITS;
+
+        char floorpic[sizeof(ms->floorpic) / sizeof(ms->floorpic[0]) * sizeof(char)];
+        C_int_str(ms->floorpic, floorpic, sizeof(floorpic) / sizeof(floorpic[0]));
+        ss->floorpic = R_FlatNumForName(floorpic);
+
+        char ceilingpic[sizeof(ms->ceilingpic) / sizeof(ms->ceilingpic[0]) * sizeof(char)];
+        C_int_str(ms->ceilingpic, ceilingpic, sizeof(ceilingpic) / sizeof(ceilingpic[0]));
+        ss->ceilingpic = R_FlatNumForName(ceilingpic);
+
+        ss->lightlevel = ms->lightlevel;
+        ss->special = ms->special;
+        ss->tag = ms->tag;
+        ss->thinglist = 0;
     }
 
     W_ReleaseLumpNum(lump);

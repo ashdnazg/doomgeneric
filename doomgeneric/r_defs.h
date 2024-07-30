@@ -98,11 +98,11 @@ typedef        struct
 {
     fixed_t        floorheight;
     fixed_t        ceilingheight;
-    short        floorpic;
-    short        ceilingpic;
-    short        lightlevel;
-    short        special;
-    short        tag;
+    int        floorpic;
+    int        ceilingpic;
+    int        lightlevel;
+    int        special;
+    int        tag;
 
     // 0 = untraversed, 1,2 = sndlines -1
     int                soundtraversed;

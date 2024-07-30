@@ -357,7 +357,7 @@ class MapEditor:
 
             self.vertexes = self._unpack_lump(Vertex,    m["VERTEXES"].data, True)
             self.sidedefs = self._unpack_lump(Sidedef,   m["SIDEDEFS"].data, True)
-            self.sectors  = self._unpack_lump(Sector,    m["SECTORS"].data)
+            self.sectors  = self._unpack_lump(Sector,    m["SECTORS"].data, True)
 
             if "BEHAVIOR" in m:
                 # Hexen / ZDoom map
