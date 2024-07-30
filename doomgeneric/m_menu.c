@@ -131,7 +131,7 @@ char        endstring[160];
 typedef struct
 {
     // 0 = no cursor here, 1 = ok, 2 = arrows ok
-    short        status;
+    int        status;
 
     char        name[10];
 
@@ -148,18 +148,18 @@ typedef struct
 
 typedef struct menu_s
 {
-    short                numitems;        // # of menu items
+    int                numitems;        // # of menu items
     struct menu_s*        prevMenu;        // previous menu
     menuitem_t*                menuitems;        // menu items
     void                (*routine)();        // draw routine
-    short                x;
-    short                y;                // x,y of menu
-    short                lastOn;                // last item user was on in menu
+    int                x;
+    int                y;                // x,y of menu
+    int                lastOn;                // last item user was on in menu
 } menu_t;
 
-short                itemOn;                        // menu item skull is on
-short                skullAnimCounter;        // skull animation counter
-short                whichSkull;                // which skull to draw
+int                itemOn;                        // menu item skull is on
+int                skullAnimCounter;        // skull animation counter
+int                whichSkull;                // which skull to draw
 
 // graphic name of skulls
 // warning: initializer-string for array of chars is too long
@@ -1948,8 +1948,8 @@ static void M_DrawOPLDev(void)
 //
 void M_Drawer (void)
 {
-    static short        x;
-    static short        y;
+    static int        x;
+    static int        y;
     unsigned int        i;
     unsigned int        max;
     char                string[80];
@@ -1992,7 +1992,7 @@ void M_Drawer (void)
 
             x = SCREENWIDTH/2 - M_StringWidth(string) / 2;
             M_WriteText(x, y, string);
-            y += SHORT(hu_font[0]->height);
+            y += hu_font[0]->height;
         }
 
         return;
