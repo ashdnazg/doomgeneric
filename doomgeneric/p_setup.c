@@ -189,15 +189,15 @@ void P_LoadSegs (int lump)
     li = segs;
     for (i=0 ; i<numsegs ; i++, li++, ml++)
     {
-        li->v1 = &vertexes[SHORT(ml->v1)];
-        li->v2 = &vertexes[SHORT(ml->v2)];
+        li->v1 = &vertexes[ml->v1];
+        li->v2 = &vertexes[ml->v2];
 
-        li->angle = (SHORT(ml->angle))<<16;
-        li->offset = (SHORT(ml->offset))<<16;
-        linedef = SHORT(ml->linedef);
+        li->angle = (ml->angle)<<16;
+        li->offset = (ml->offset)<<FRACBITS;
+        linedef = ml->linedef;
         ldef = &lines[linedef];
         li->linedef = ldef;
-        side = SHORT(ml->side);
+        side = ml->side;
         li->sidedef = &sides[ldef->sidenum[side]];
         li->frontsector = sides[ldef->sidenum[side]].sector;
 

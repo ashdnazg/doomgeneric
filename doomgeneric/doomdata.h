@@ -159,12 +159,12 @@ typedef struct
 // using partition lines selected by BSP builder.
 typedef struct
 {
-  short                v1;
-  short                v2;
-  short                angle;
-  short                linedef;
-  short                side;
-  short                offset;
+  int                v1;
+  int                v2;
+  int                angle;
+  int                linedef;
+  int                side;
+  int                offset;
 } PACKEDATTR mapseg_t;
 
 
