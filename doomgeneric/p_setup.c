@@ -320,15 +320,15 @@ void P_LoadNodes (int lump)
 
     for (i=0 ; i<numnodes ; i++, no++, mn++)
     {
-        no->x = SHORT(mn->x)<<FRACBITS;
-        no->y = SHORT(mn->y)<<FRACBITS;
-        no->dx = SHORT(mn->dx)<<FRACBITS;
-        no->dy = SHORT(mn->dy)<<FRACBITS;
+        no->x = mn->x<<FRACBITS;
+        no->y = mn->y<<FRACBITS;
+        no->dx = mn->dx<<FRACBITS;
+        no->dy = mn->dy<<FRACBITS;
         for (j=0 ; j<2 ; j++)
         {
-            no->children[j] = SHORT(mn->children[j]);
+            no->children[j] = mn->children[j];
             for (k=0 ; k<4 ; k++)
-                no->bbox[j][k] = SHORT(mn->bbox[j][k])<<FRACBITS;
+                no->bbox[j][k] = mn->bbox[j][k]<<FRACBITS;
         }
     }
 

@@ -387,7 +387,7 @@ class MapEditor:
         try:
             self.ssectors = self._unpack_lump(SubSector, m["SSECTORS"].data, True)
             self.segs     = self._unpack_lump(Seg,       m["SEGS"].data, True)
-            self.nodes    = self._unpack_lump(Node,      m["NODES"].data)
+            self.nodes    = self._unpack_lump(Node,      m["NODES"].data, True)
             self.blockmap = m["BLOCKMAP"]
             self.reject   = m["REJECT"]
         except (KeyError, StructError):

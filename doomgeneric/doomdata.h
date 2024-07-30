@@ -177,18 +177,18 @@ typedef struct
 typedef struct
 {
   // Partition line from (x,y) to x+dx,y+dy)
-  short                x;
-  short                y;
-  short                dx;
-  short                dy;
+  int                x;
+  int                y;
+  int                dx;
+  int                dy;
 
   // Bounding box for each child,
   // clip against view frustum.
-  short                bbox[2][4];
+  int                bbox[2][4];
 
   // If NF_SUBSECTOR its a subsector,
   // else it's a node of another subtree.
-  unsigned short        children[2];
+  unsigned int        children[2];
 
 } PACKEDATTR mapnode_t;
 
