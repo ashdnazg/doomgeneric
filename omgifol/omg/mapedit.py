@@ -61,8 +61,8 @@ class Linedef(WADStruct):
         ("flags",  WADFlags(_flags_)),
         ("action", ctypes.c_uint16),
         ("tag",    ctypes.c_uint16),
-        ("front",  ctypes.c_uint16),
-        ("back",   ctypes.c_uint16)
+        ("front",  ctypes.c_int16),
+        ("back",   ctypes.c_int16)
     ]
     _anonymous_ = ("flags",)
 
@@ -281,9 +281,72 @@ class MapEditor:
             self.blockmap = Lump("")
             self.reject   = Lump("")
 
-    def _unpack_lump(self, class_, data):
+    def _unpack_lump(self, class_, data, intify=False):
+        def intify_type(t):
+            if t in [ctypes.c_char, ctypes.c_int8, ctypes.c_uint8, ctypes.c_int16, ctypes.c_uint16, ctypes.c_int32, ctypes.c_uint32]:
+                return ctypes.c_int32
+            if issubclass(t, ctypes.Array):
+                return intify_type(t._type_) * t._length_
+            if issubclass(t, WADStruct):
+                class IntifiedStruct(WADStruct):
+                    _fields_ = [(x[0], intify_type(x[1])) for x in t._fields_]
+
+                return IntifiedStruct
+            if issubclass(t, ctypes.Union):
+                class IntifiedUnion(ctypes.Union):
+                    class Flags(ctypes.LittleEndianStructure):
+                        # figure out the size in bits of each field
+                        _fields_ = [(name, ctypes.c_int32, size) for (name, _, size) in t._fields_[1][1]._fields_]
+
+                    _fields_ = [("flags", ctypes.c_int32), ("_flags", Flags)]
+                    _anonymous_ = ("_flags",)
+
+                return IntifiedUnion
+
+            raise TypeError(f"type not supported: {t}")
+
+        def convert(x, source_type, target_type):
+            # print(x, source_type, target_type)
+            if type(x) == int:
+                # assert target_type == ctypes.c_int32 or issubclass(type(x), ctypes.Union)
+                return target_type(x)
+            if type(x) == str:
+                assert issubclass(target_type, ctypes.Array)
+                assert target_type._type_ == ctypes.c_int32
+                return target_type(*[int(b) for b in safe_name(x).encode('ascii')])
+            if type(x) in [ctypes.c_char, ctypes.c_int8, ctypes.c_uint8, ctypes.c_int16, ctypes.c_uint16, ctypes.c_int32, ctypes.c_uint32]:
+                assert target_type == ctypes.c_int32
+                return target_type(x.value)
+            # if issubclass(type(x), ctypes.Array):
+            #     return target_type(convert(y, source_type._type_, target_type._type_) for y in x)
+            if issubclass(type(x), WADStruct):
+                assert issubclass(target_type, WADStruct)
+                d = {}
+                for source_field, target_field in zip(type(x)._fields_, target_type._fields_):
+                    assert source_field[0] == target_field[0]
+                    d[target_field[0]] = convert(getattr(x, source_field[0]), source_field[1], target_field[1])
+                return target_type(**d)
+            # if issubclass(type(x), ctypes.Union):
+            #     assert issubclass(target_type, ctypes.Union)
+            #     return target_type(x.flags)
+
+            raise TypeError(f"type not supported: {type(x)}")
+
+        if intify:
+            class2 = intify_type(class_)
+        else:
+            class2 = class_
+
         s = ctypes.sizeof(class_)
-        return [class_(bytes=data[i:i+s]) for i in range(0,len(data),s)]
+        ret = []
+
+        for i in range(0,len(data),s):
+            instance = class_(bytes=data[i:i+s])
+            if intify:
+                instance = convert(instance, class_, class2)
+            ret.append(instance)
+
+        return ret
 
     def from_lumps(self, lumpgroup):
         """Load entries from a lump group."""
@@ -292,8 +355,8 @@ class MapEditor:
         try:
             self.header   = m["_HEADER_"]
 
-            self.vertexes = self._unpack_lump(Vertex,    m["VERTEXES"].data)
-            self.sidedefs = self._unpack_lump(Sidedef,   m["SIDEDEFS"].data)
+            self.vertexes = self._unpack_lump(Vertex,    m["VERTEXES"].data, True)
+            self.sidedefs = self._unpack_lump(Sidedef,   m["SIDEDEFS"].data, True)
             self.sectors  = self._unpack_lump(Sector,    m["SECTORS"].data)
 
             if "BEHAVIOR" in m:
@@ -316,7 +379,7 @@ class MapEditor:
                     pass
 
             self.things   = self._unpack_lump(self.Thing,   m["THINGS"].data)
-            self.linedefs = self._unpack_lump(self.Linedef, m["LINEDEFS"].data)
+            self.linedefs = self._unpack_lump(self.Linedef, m["LINEDEFS"].data, True)
         except KeyError as e:
             raise ValueError("map is missing %s lump" % e)
 

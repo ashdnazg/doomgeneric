@@ -139,8 +139,8 @@ void P_LoadVertexes (int lump)
     // internal representation as fixed.
     for (i=0 ; i<numvertexes ; i++, li++, ml++)
     {
-        li->x = SHORT(ml->x)<<FRACBITS;
-        li->y = SHORT(ml->y)<<FRACBITS;
+        li->x = ml->x<<FRACBITS;
+        li->y = ml->y<<FRACBITS;
     }
 
     // Free buffer memory.
@@ -407,11 +407,11 @@ void P_LoadLineDefs (int lump)
     ld = lines;
     for (i=0 ; i<numlines ; i++, mld++, ld++)
     {
-        ld->flags = SHORT(mld->flags);
-        ld->special = SHORT(mld->special);
-        ld->tag = SHORT(mld->tag);
-        v1 = ld->v1 = &vertexes[SHORT(mld->v1)];
-        v2 = ld->v2 = &vertexes[SHORT(mld->v2)];
+        ld->flags = mld->flags;
+        ld->special = mld->special;
+        ld->tag = mld->tag;
+        v1 = ld->v1 = &vertexes[mld->v1];
+        v2 = ld->v2 = &vertexes[mld->v2];
         ld->dx = v2->x - v1->x;
         ld->dy = v2->y - v1->y;
 
@@ -449,8 +449,8 @@ void P_LoadLineDefs (int lump)
             ld->bbox[BOXTOP] = v1->y;
         }
 
-        ld->sidenum[0] = SHORT(mld->sidenum[0]);
-        ld->sidenum[1] = SHORT(mld->sidenum[1]);
+        ld->sidenum[0] = mld->sidenum[0];
+        ld->sidenum[1] = mld->sidenum[1];
 
         if (ld->sidenum[0] != -1)
             ld->frontsector = sides[ld->sidenum[0]].sector;
@@ -486,12 +486,20 @@ void P_LoadSideDefs (int lump)
     sd = sides;
     for (i=0 ; i<numsides ; i++, msd++, sd++)
     {
-        sd->textureoffset = SHORT(msd->textureoffset)<<FRACBITS;
-        sd->rowoffset = SHORT(msd->rowoffset)<<FRACBITS;
-        sd->toptexture = R_TextureNumForName(msd->toptexture);
-        sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
-        sd->midtexture = R_TextureNumForName(msd->midtexture);
-        sd->sector = &sectors[SHORT(msd->sector)];
+        sd->textureoffset = msd->textureoffset<<FRACBITS;
+        sd->rowoffset = msd->rowoffset<<FRACBITS;
+        char toptexture[sizeof(msd->toptexture) / sizeof(msd->toptexture[0]) * sizeof(char)];
+        C_int_str(msd->toptexture, toptexture, sizeof(toptexture) / sizeof(toptexture[0]));
+        sd->toptexture = R_TextureNumForName(toptexture);
+
+        char bottomtexture[sizeof(msd->bottomtexture) / sizeof(msd->bottomtexture[0]) * sizeof(char)];
+        C_int_str(msd->bottomtexture, bottomtexture, sizeof(bottomtexture) / sizeof(bottomtexture[0]));
+        sd->bottomtexture = R_TextureNumForName(bottomtexture);
+
+        char midtexture[sizeof(msd->midtexture) / sizeof(msd->midtexture[0]) * sizeof(char)];
+        C_int_str(msd->midtexture, midtexture, sizeof(midtexture) / sizeof(midtexture[0]));
+        sd->midtexture = R_TextureNumForName(midtexture);
+        sd->sector = &sectors[msd->sector];
     }
 
     W_ReleaseLumpNum(lump);

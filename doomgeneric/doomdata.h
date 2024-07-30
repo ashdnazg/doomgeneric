@@ -56,8 +56,8 @@ enum
 // A single Vertex.
 typedef struct
 {
-  short                x;
-  short                y;
+  int                x;
+  int                y;
 } PACKEDATTR mapvertex_t;
 
 
@@ -65,13 +65,13 @@ typedef struct
 // by setting textures and offsets.
 typedef struct
 {
-  short                textureoffset;
-  short                rowoffset;
-  char                toptexture[8];
-  char                bottomtexture[8];
-  char                midtexture[8];
+  int                textureoffset;
+  int                rowoffset;
+  int                toptexture[8];
+  int                bottomtexture[8];
+  int                midtexture[8];
   // Front sector, towards viewer.
-  short                sector;
+  int                sector;
 } PACKEDATTR mapsidedef_t;
 
 
@@ -80,13 +80,13 @@ typedef struct
 // to the BSP builder.
 typedef struct
 {
-  short                v1;
-  short                v2;
-  short                flags;
-  short                special;
-  short                tag;
+  int                v1;
+  int                v2;
+  int                flags;
+  int                special;
+  int                tag;
   // sidenum[1] will be -1 if one sided
-  short                sidenum[2];
+  int                sidenum[2];
 } PACKEDATTR maplinedef_t;
 
 

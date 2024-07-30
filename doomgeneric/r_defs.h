@@ -147,9 +147,9 @@ typedef struct
 
     // Texture indices.
     // We do not maintain names here.
-    short        toptexture;
-    short        bottomtexture;
-    short        midtexture;
+    int        toptexture;
+    int        bottomtexture;
+    int        midtexture;
 
     // Sector the SideDef is facing.
     sector_t*        sector;
@@ -183,13 +183,13 @@ typedef struct line_s
     fixed_t        dy;
 
     // Animation related.
-    short        flags;
-    short        special;
-    short        tag;
+    int        flags;
+    int        special;
+    int        tag;
 
     // Visual appearance: SideDefs.
     //  sidenum[1] will be -1 if one sided
-    short        sidenum[2];
+    int        sidenum[2];
 
     // Neat. Another bounding box, for the extent
     //  of the LineDef.

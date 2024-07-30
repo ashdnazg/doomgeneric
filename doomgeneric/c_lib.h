@@ -120,4 +120,6 @@ int C_e_is_dir(void);
 
 int C_mkdir(const char *path);
 
+int C_int_str(const int *int_str, char *str, size_t size);
+
 #endif /* #ifndef __C_LIB__ */

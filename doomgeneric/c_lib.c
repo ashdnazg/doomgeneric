@@ -279,3 +279,11 @@ int C_mkdir(const char *path)
 {
     return mkdir(path, 0755);
 }
+
+int C_int_str(const int *int_str, char *str, size_t size)
+{
+    for (size_t i = 0; i < size; ++i)
+    {
+        str[i] = int_str[i];
+    }
+}
