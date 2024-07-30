@@ -223,8 +223,8 @@ typedef struct line_s
 typedef struct subsector_s
 {
     sector_t*        sector;
-    short        numlines;
-    short        firstline;
+    int        numlines;
+    int        firstline;
 
 } subsector_t;
 

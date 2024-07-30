@@ -385,7 +385,7 @@ class MapEditor:
 
         from struct import error as StructError
         try:
-            self.ssectors = self._unpack_lump(SubSector, m["SSECTORS"].data)
+            self.ssectors = self._unpack_lump(SubSector, m["SSECTORS"].data, True)
             self.segs     = self._unpack_lump(Seg,       m["SEGS"].data)
             self.nodes    = self._unpack_lump(Node,      m["NODES"].data)
             self.blockmap = m["BLOCKMAP"]

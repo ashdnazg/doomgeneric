@@ -250,8 +250,8 @@ void P_LoadSubsectors (int lump)
 
     for (i=0 ; i<numsubsectors ; i++, ss++, ms++)
     {
-        ss->numlines = SHORT(ms->numsegs);
-        ss->firstline = SHORT(ms->firstseg);
+        ss->numlines = ms->numsegs;
+        ss->firstline = ms->firstseg;
     }
 
     W_ReleaseLumpNum(lump);
