@@ -33,7 +33,7 @@ typedef struct
 {
     signed char        forwardmove;        // *2048 for move
     signed char        sidemove;        // *2048 for move
-    short angleturn;            // <<16 for angle delta
+    int angleturn;            // <<16 for angle delta
     byte chatchar;
     byte buttons;
     // villsa [STRIFE] according to the asm,

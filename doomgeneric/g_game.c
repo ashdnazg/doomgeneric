@@ -575,8 +575,8 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
 
     if (lowres_turn)
     {
-        static signed short carry = 0;
-        signed short desired_angleturn;
+        static int carry = 0;
+        signed int desired_angleturn;
 
         desired_angleturn = cmd->angleturn + carry;
 
