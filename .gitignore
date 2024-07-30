@@ -4,7 +4,11 @@
 *.DS_Store
 *.log
 *.user
+*.wad
 *~
 .vs/
 Debug/
 Release/
+doomgeneric/doomgeneric
+doomgeneric/doomgeneric.map
+.vscode/
