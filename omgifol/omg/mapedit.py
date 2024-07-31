@@ -232,6 +232,12 @@ class SubSector(WADStruct):
         ("seg_a",   ctypes.c_uint16)
     ]
 
+class BlockMapEntry(WADStruct):
+    """Represents a map blockmap entry."""
+    _fields_ = [
+        ("entry", ctypes.c_int16),
+    ]
+
 class MapEditor:
     """Doom map editor.
 
@@ -385,10 +391,10 @@ class MapEditor:
 
         from struct import error as StructError
         try:
-            self.ssectors = self._unpack_lump(SubSector, m["SSECTORS"].data, True)
-            self.segs     = self._unpack_lump(Seg,       m["SEGS"].data, True)
-            self.nodes    = self._unpack_lump(Node,      m["NODES"].data, True)
-            self.blockmap = m["BLOCKMAP"]
+            self.ssectors = self._unpack_lump(SubSector,      m["SSECTORS"].data, True)
+            self.segs     = self._unpack_lump(Seg,            m["SEGS"].data, True)
+            self.nodes    = self._unpack_lump(Node,           m["NODES"].data, True)
+            self.blockmap = self._unpack_lump(BlockMapEntry, m["BLOCKMAP"].data, True)
             self.reject   = m["REJECT"]
         except (KeyError, StructError):
             # nodes failed to build - we don't really care
@@ -418,7 +424,7 @@ class MapEditor:
         m["NODES"]    = Lump(join([x.pack() for x in self.nodes   ]))
         m["SEGS"]     = Lump(join([x.pack() for x in self.segs    ]))
         m["SSECTORS"] = Lump(join([x.pack() for x in self.ssectors]))
-        m["BLOCKMAP"] = self.blockmap
+        m["BLOCKMAP"] = Lump(join([bytes(x) for x in self.blockmap]))
         m["REJECT"]   = self.reject
 
         # hexen / zdoom script lumps

@@ -81,9 +81,9 @@ static int      totallines;
 // Blockmap size.
 int                bmapwidth;
 int                bmapheight;        // size in mapblocks
-short*                blockmap;        // int for larger maps
+int*                blockmap;        // int for larger maps
 // offsets in blockmap are from here
-short*                blockmaplump;
+int*                blockmaplump;
 // origin of block map
 fixed_t                bmaporgx;
 fixed_t                bmaporgy;
@@ -531,10 +531,10 @@ void P_LoadBlockMap (int lump)
 
     // Swap all short integers to native byte ordering.
 
-    for (i=0; i<count; i++)
-    {
-        blockmaplump[i] = SHORT(blockmaplump[i]);
-    }
+    // for (i=0; i<count; i++)
+    // {
+    //     blockmaplump[i] = blockmaplump[i];
+    // }
 
     // Read the header
 
